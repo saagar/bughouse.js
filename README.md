@@ -1,4 +1,5 @@
-signalfire
+Multiplayer Bughouse
 ==========
 
-Signal Fire Hackathon
+
+Signal Fire Hackathon, 2013
