@@ -1,17 +1,17 @@
 LobbyView = Backbone.View.extend({
-	el: "#content",
-	initialize: function() {
-		//this.render();
-	}, 
-	render: function() {
-		var template = _.template($("#template_lobby").html(), {});
-		this.$el.html(template);
-		return this;
-	},
-	remove: function() {
-		this.$el.empty();
-		return this;
-	},
+    el: "#content",
+    initialize: function() {
+	//this.render();
+    }, 
+    render: function() {
+	var template = _.template($("#template_lobby").html(), {});
+	this.$el.html(template);
+	return this;
+    },
+    remove: function() {
+	this.$el.empty();
+	return this;
+    },
 });
 
 SQUARE_SIZE = 60;
@@ -19,8 +19,7 @@ PIECE_SIZE = SQUARE_SIZE - 5;
 PIECE_OFFSET = (SQUARE_SIZE - PIECE_SIZE) / 2;
 BOARD_SIZE = 8 * SQUARE_SIZE;
 
-
-var placePiece = function(board, name, place, bottom_color) {
+function placePiece(board, name, place, bottom_color) {
     var i, j;
     i = place.charCodeAt(0) - 'A'.charCodeAt(0);
     j = 7 - (place.charCodeAt(1) - '1'.charCodeAt(0));
@@ -29,6 +28,12 @@ var placePiece = function(board, name, place, bottom_color) {
         i = 7 - i; j = 7 - j;
     }
     return board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+}
+
+function  getPieceAt(board, i, j) {
+    var x = (i + 0.5) * SQUARE_SIZE;
+    var y = (j + 0.5) * SQUARE_SIZE;
+    return board.getElementByPoint(x, y);
 }
 
 // piece drag actions
@@ -56,6 +61,14 @@ up = function(event) {
         // if valid square, snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
         this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET);
+
+        // Get the original position
+        var oi = Math.floor(this.ox / SQUARE_SIZE);
+        var oj = Math.floor(this.oy / SQUARE_SIZE);
+
+        if (oi == 0 && oj == 0) {
+            this.remove();
+        }
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -82,64 +95,62 @@ var setupBoard = function(board, bottom_color) {
 }
 
 GameView = Backbone.View.extend({
-	el: "#content",
-	gameId: null,
-	initialize: function() {
-		console.log(this.options.gameId);
-	},
-	render: function() {
-		var template = _.template($("#template_game").html(), {});
+    el: "#content",
+    gameId: null,
+    initialize: function() {
+	console.log(this.options.gameId);
+    },
+    render: function() {
+	var template = _.template($("#template_game").html(), {});
 
-		this.$el.html(template);
+	this.$el.html(template);
 
-		this.boards = {};
-		this.bottom_color = {};
-		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE);
+	this.boards = {};
+	this.bottom_color = {};
+	this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE);
     	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE);
 
     	setupBoard(this.boards[0], 'white');
     	setupBoard(this.boards[1], 'black');
-		return this;
-	},
-	remove: function() {
+	return this;
+    },
+    remove: function() {
 
-	}
+    }
 });
 
 AppRouter = Backbone.Router.extend({
-	initialize: function(el) {
-		this.el = el;
-		this.lobbyView = new LobbyView();
-	},
-	currentView: null,
+    initialize: function(el) {
+	this.el = el;
+	this.lobbyView = new LobbyView();
+    },
+    currentView: null,
 
-	switchView: function(view) {
-		this.el.html(view.$el.html());
-		view.render();
-		this.currentView = view;
-	},
+    switchView: function(view) {
+	this.el.html(view.$el.html());
+	view.render();
+	this.currentView = view;
+    },
 
-	routes: {
-		"lobby": "showLobby",
-		"game/:id": "showGame"
-	},
+    routes: {
+	"lobby": "showLobby",
+	"game/:id": "showGame"
+    },
 
-	showLobby: function() {
-		this.switchView(this.lobbyView);
-	},
+    showLobby: function() {
+	this.switchView(this.lobbyView);
+    },
 
-	showGame: function(id) {
-		this.switchView(new GameView({'gameId': id}));
-	}
+    showGame: function(id) {
+	this.switchView(new GameView({'gameId': id}));
+    }
 });
 
 $(document).ready(function() {
-	var router = new AppRouter($('#content'));
+    var router = new AppRouter($('#content'));
 
-	Backbone.history.start();
+    Backbone.history.start();
 });
-
-
 
 // piece starting locations
 var starting_places = {
