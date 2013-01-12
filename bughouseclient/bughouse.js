@@ -178,6 +178,14 @@ function bughouse()
             "reserve1b": reserve1b };
   }
 
+  this.copyBoard = function(board) {
+    var newBoard = {};
+    for (e in board) {
+      newBoard[e] = board[e];
+    }
+    return newBoard;
+  }
+
   // checks validity of move 
   // data: "0b_F2-G4"
   this.move = function(data)
@@ -195,17 +203,21 @@ function bughouse()
     if (isInCheck(moveBoardNum)) {
       // Check if it is a legal move
       if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
-        var moveBoard = boards[moveBoardNum]; 
+        var moveBoard = copyBoard(boards[moveBoardNum]);
         moveBoard[toLoc] = moveBoard[fromLoc];
         moveBoard[fromLoc] = "";
         // make sure we're not in check
         if (!isInCheck(moveBoardNum)) {
           legal = true;
+          // change it on the actual board
+          boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
+          boards[moveBoardNum][fromLoc] = "";
         }
+      }
     } else {
       //if current situation is not check, check if move is legal
       if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
-        var moveBoard = boards[moveBoardNum]; 
+        var moveBoard = boards[moveBoardNum];
         // We are capturing
         if (moveBoard[toLoc] != "") {
           var capturedPiece = getPieceData(moveBoardNum, toLoc);
@@ -217,10 +229,6 @@ function bughouse()
       }
     }
     
-    //if so, make sure second position is not check
-    //if not check then legal
-
-
     var json = getJSON();
     json['wasLegal'] = legal;
     return json;
@@ -267,26 +275,113 @@ function bughouse()
     switch(piece)
     {
       case "knight":
-        return checkKnightMoves(boardnum, piece, location, player);
+        return checkKnightMoves(boardnum, location, player);
       case "pawn":
-        return checkPawnMoves(boardnum, piece, location, player);
+        return checkPawnMoves(boardnum, location, player);
       case "king":
-        return checkKingMoves(boardnum, piece, location, player);
+        return checkKingMoves(boardnum, location, player);
       case "queen":
         // this case can use bishop and rook checks
-        var mvs = checkDiagonalMoves(boardnum, piece, location, player);
-        mvs.push(checkHVMoves(boardnum, piece, location, player));
+        var mvs = checkDiagonalMoves(boardnum, location, player);
+        mvs.push(checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
-        return checkDiagonalMoves(boardnum, piece, location, player);
+        return checkDiagonalMoves(boardnum, location, player);
       case "rook":
-        return checkHVMoves(boardnum, piece, location, player);
+        return checkHVMoves(boardnum, location, player);
 
     }
 
   }
 
-  this.
+  this.checkHVMoves(boardnum, location, player){
+    var mvs = [];
+    var tuple = convertToTuple(location);
+
+    // check vertical mvs
+      
+    // go UP first
+    for(var i = tuple[1]; i <= 8; i++){
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+    // go DOWN after
+    for(var i = tuple[1]; i >= 0; i--){
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+
+    // check horizontal mvs
+
+    // go RIGHT first
+    for(var i = tuple[0]; i <= 8; i++){
+
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+
+    // go LEFT after
+    for(var i = tuple[0]; i >= 0; i++){
+
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+  }
 
   // converts a space name like "A1" into a tuple like [1,1]
   this.convertToTuple = function(space)
@@ -310,6 +405,32 @@ function bughouse()
       case "H":
         return [8, parseInt(space.charAt(1))];
     } 
+  }
+
+  // converts a two element array into square name:
+  // for example, converts "[3, 1]" into "C1"
+  this.convertToString = function(tuple)
+  {
+    var row = tuple[1];
+    switch(tuple[0])
+    {
+      case 1:
+        return "A" + row.toString();
+      case 2:
+        return "B" + row.toString();
+      case 3:
+        return "C" + row.toString();
+      case 4:
+        return "D" + row.toString();
+      case 5:
+        return "E" + row.toString();
+      case 6:
+        return "F" + row.toString();
+      case 7:
+        return "G" + row.toString();
+      case 8:
+        return "H" + row.toString();
+    }
   }
 
   // returns array of [pieceowner, piecetype]
