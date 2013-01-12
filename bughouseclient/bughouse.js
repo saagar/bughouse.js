@@ -9,6 +9,17 @@ function bughouse()
     var reserve1b; //second board, black player's reserve pieces
     //use reserve0w.push("nameofpiece") to add to array
 
+    var knightMoves = {
+      "1": [2,1],
+      "2": [2,-1],
+      "3": [1,-2],
+      "4": [-1,-2],
+      "5": [-2,-1],
+      "6": [-2,1],
+      "7": [-1,2],
+      "8": [1,2]
+    };
+
   // private constructor 
   __construct = function() 
   {
@@ -197,10 +208,34 @@ function bughouse()
     for (e in boards[boardnum])
     {
       //alert(e); //e is going to be the key, that is, for example, "A1"
-      
+
     }
 
 
+  }
+
+  // converts a space name like "A1" into a tuple like (1,1)
+  this.convertToTuple = function(space)
+  {
+    switch(space.charAt(0))
+    {
+      case "A":
+        return [1, parseInt(space.charAt(1))];
+      case "B":
+        return [2, parseInt(space.charAt(1))];
+      case "C":
+        return [3, parseInt(space.charAt(1))];
+      case "D":
+        return [4, parseInt(space.charAt(1))];
+      case "E":
+        return [5, parseInt(space.charAt(1))];
+      case "F":
+        return [6, parseInt(space.charAt(1))];
+      case "G":
+        return [7, parseInt(space.charAt(1))];
+      case "H":
+        return [8, parseInt(space.charAt(1))];
+    } 
   }
 
 
