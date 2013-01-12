@@ -305,25 +305,25 @@ exports.bughouse = function()
 
     // get top 3
     if ((tuple[1]+1 <= 8)){
-      sqs.push(this.convertToString([tuple[0],tuple[1]+1)); 
-      sqs.push(this.convertToString([tuple[0]+1,tuple[1]+1));
-      sqs.push(this.convertToString([tuple[0]-1,tuple[1]+1));
+      sqs.push(this.convertToString([tuple[0],tuple[1]+1])); 
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]+1]));
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]+1]));
     }
 
     // get bottom 3
     if (tuple[1]-1 > 0){
-      sqs.push(this.convertToString([tuple[0],tuple[1]-1)); 
-      sqs.push(this.convertToString([tuple[0]+1,tuple[1]-1));
-      sqs.push(this.convertToString([tuple[0]-1,tuple[1]-1));
+      sqs.push(this.convertToString([tuple[0],tuple[1]-1])); 
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]-1]));
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]-1]));
     }
 
     // get left
     if (tuple[0]-1 > 0)
-      sqs.push(this.convertToString([tuple[0]-1,tuple[1])); 
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]])); 
     
     // get right
     if (tuple[0]+1 <= 8)
-      sqs.push(this.convertToString([tuple[0]+1,tuple[1])); 
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]])); 
 
     var len = sqs.length;
     for (var i = 0; i < len; i++){
@@ -615,4 +615,4 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.getSinglePieceAttackSquares(0, "rook", "F4", "w"));
+console.log(b.checkHVMoves(0, "F4", "w"));
