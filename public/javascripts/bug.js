@@ -400,7 +400,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://localhost:8001');
+    window.socket = io.connect('http://mcamac.com:8001');
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
