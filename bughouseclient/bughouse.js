@@ -52,11 +52,11 @@ exports.bughouse = function()
       "A4": "",
       "B4": "",
       "C4": "",
-      "D4": "",
+      "D4": "white queen",
       "E4": "white knight",
       "F4": "white rook",
-      "G4": "",
-      "H4": "",
+      "G4": "white bishop",
+      "H4": "white king",
       "A5": "",
       "B5": "",
       "C5": "",
@@ -481,7 +481,6 @@ exports.bughouse = function()
     // go UP first
     for(var i = tuple[1]+1; i <= 8; i++){
       var square = this.convertToString([tuple[0],i]);
-      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
@@ -501,7 +500,6 @@ exports.bughouse = function()
     // go DOWN after
     for(var i = tuple[1]-1; i >= 0; i--){
       var square = this.convertToString([tuple[0],i]);
-      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){
@@ -647,4 +645,5 @@ exports.bughouse = function()
 
 var b = new exports.bughouse();
 console.log(b.checkHVMoves(0, "F4", 0));
+console.log(b.checkDiagonalMoves(0, "G4", 0));
 console.log(b.checkKnightMoves(0, "E4", 0));
