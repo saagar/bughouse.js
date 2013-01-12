@@ -238,7 +238,6 @@ exports.bughouse = function()
     }
     var json = this.getJSON();
     json['wasLegal'] = legal;
-    console.log(json);
     return json;
   }
 
@@ -773,7 +772,7 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-b.move("0w_D4-D7");
+console.log(b.move("0w_D4-D7"));
 //console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
