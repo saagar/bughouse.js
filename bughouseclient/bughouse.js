@@ -219,8 +219,10 @@ exports.bughouse = function()
       } else {
         //if current situation is not check, check if move is legal
         var moveBoard = boards[moveBoardNum];
+        console.log(_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor)));
         if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           // We are capturing
+          console.log("can attack");
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
             reserve[boardPlayerTuple].push(capturedPiece);
@@ -734,8 +736,10 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
+console.log(b.move("0w_D1-C8"));
+//console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
-console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
+//console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "knight","E4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "queen","D4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "king","H4", 0));
