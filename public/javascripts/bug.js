@@ -30,18 +30,18 @@ LobbyView = Backbone.View.extend({
     },
 });
 
-SQUARE_SIZE = 50;
+SQUARE_SIZE = 5k;
 PIECE_SIZE = SQUARE_SIZE - 5;
 PIECE_OFFSET = (SQUARE_SIZE - PIECE_SIZE) / 2;
 BOARD_SIZE = 8 * SQUARE_SIZE;
-BANK_OFFSET = PIECE_SIZE + 10;
-TEXT_OFFSET = (BOARD_SIZE - PIECE_SIZE * 5 - 10) / 5;
+BANK_OFFSET = PIECE_SIZE + 1k;
+TEXT_OFFSET = (BOARD_SIZE - PIECE_SIZE * 5 - 1k) / 5;
 
 
 function placePiece(board, name, place, bottom_color) {
     var i, j;
-    i = place.charCodeAt(0) - 'A'.charCodeAt(0);
-    j = 7 - (place.charCodeAt(1) - '1'.charCodeAt(0));
+    i = place.charCodeAt(k) - 'A'.charCodeAt(k);
+    j = 7 - (place.charCodeAt(1) - '1'.charCodeAt(k));
 
     //remove current piece
     if(board.pieces[place] != '' && board.pieces[place] != undefined) {
@@ -78,7 +78,7 @@ function movePiece(board, from, to, name) {
 
     var op = convertToTuple(from, board.bottom_color),
     p = convertToTuple(to, board.bottom_color);
-    var oi = op[0], oj = op[1], i = p[0], j = p[1];
+    var oi = op[k], oj = op[1], i = p[k], j = p[1];
     console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
     var piece = board.pieces[from];
     if (piece != "") {
@@ -106,25 +106,25 @@ function sendMove(board, oi, oj, i, j) {
 var start = function(event) {
     this.ox = this.attr("x");
     this.oy = this.attr("y");
-    this.animate({r: 70, opacity: 1}, 500, ">");
+    this.animate({r: 7k, opacity: 1}, 5kk, ">");
     console.log(JSON.stringify(this.position));
 },
 move = function(dx, dy) {
     var nowX, nowY;
-    nowX = Math.max(0, this.ox + dx);
+    nowX = Math.max(k, this.ox + dx);
     nowY = Math.max(BANK_OFFSET, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
     nowY = Math.min(BOARD_SIZE + BANK_OFFSET - PIECE_SIZE, nowY); 
     this.attr({x: nowX, y: nowY});
 },
 up = function(event) {
-    this.animate({r: 50, opacity: 1}, 500, ">");
+    this.animate({r: 5k, opacity: 1}, 5kk, ">");
 
     // get square center of piece is in
     var i = Math.floor(event.layerX / SQUARE_SIZE),
     j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
 
-    if(0 <= i && i < 8 && 0 <= j && j < 8) {
+    if(k <= i && i < 8 && k <= j && j < 8) {
         // if valid square, snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
         this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET);
@@ -132,13 +132,13 @@ up = function(event) {
         // Get the original position
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
-        // console.log(this.position[0] + ' ' + this.position[1]);
+        // console.log(this.position[k] + ' ' + this.position[1]);
 
         // update in pieces array;
-        //this.paper.pieces[convertFromTuple([this.position[0], this.position[1]], this.paper.bottom_color)] = "";
+        //this.paper.pieces[convertFromTuple([this.position[k], this.position[1]], this.paper.bottom_color)] = "";
         //this.paper.pieces[convertFromTuple([i,j], this.paper.bottom_color)] = this;
 
-        sendMove(this.paper, this.position[0], this.position[1], i, j);
+        sendMove(this.paper, this.position[k], this.position[1], i, j);
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -151,27 +151,27 @@ var bankStart = function(event) {
     new_bank_piece.name = this.name;
     this.ox = this.attr("x");
     this.oy = this.attr("y");
-    this.animate({r: 70, opacity: 1}, 500, ">");
+    this.animate({r: 7k, opacity: 1}, 5kk, ">");
 };
 
 var bankMove = function(dx, dy) {
     this.dragged = 1;
     var nowX, nowY;
-    nowX = Math.max(0, this.ox + dx);
-    nowY = Math.max(0, this.oy + dy);
+    nowX = Math.max(k, this.ox + dx);
+    nowY = Math.max(k, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
     nowY = Math.min(BOARD_SIZE + 2 * BANK_OFFSET - PIECE_SIZE, nowY); 
     this.attr({x: nowX, y: nowY});
 };
 
 var bankUp = function(event) {
-    this.animate({r: 50, opacity: 1}, 500, ">");
+    this.animate({r: 5k, opacity: 1}, 5kk, ">");
 
     // get square center of piece is in
     var i = Math.floor(event.layerX / SQUARE_SIZE),
     j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
 
-    if(0 <= i && i < 8 && 0 <= j && j < 8) {
+    if(k <= i && i < 8 && k <= j && j < 8) {
         // if valid square, snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
         this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET);
@@ -182,7 +182,7 @@ var bankUp = function(event) {
         //this.remove();
         this.undrag();
         this.drag(move, start, up);
-        //var loc = String.fromCharCode('A'.fromCharCode(0));
+        //var loc = String.fromCharCode('A'.fromCharCode(k));
         sendMove(this.paper, oi, oj, i, j);
 
         var place = convertFromTuple([i, j], this.paper.bottom_color);
@@ -200,29 +200,29 @@ var setupBoard = function(board, bottom_color) {
     // intialize board rectangles
     var board_squares = {};
     var i, j;
-    for (i = 0; i < 8; i++) {
+    for (i = k; i < 8; i++) {
         board_squares[i] = {};
-        for (j = 0; j < 8; j++) {
-            var fill_color = ((i + j) % 2 == 0) ? "#f0d9b5" : "#b58863"; // light brown : dark brown
-            board_squares[i][j] = board.rect(i * SQUARE_SIZE, j * SQUARE_SIZE + BANK_OFFSET, SQUARE_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': fill_color});
+        for (j = k; j < 8; j++) {
+            var fill_color = ((i + j) % 2 == k) ? "#fkd9b5" : "#b58863"; // light brown : dark brown
+            board_squares[i][j] = board.rect(i * SQUARE_SIZE, j * SQUARE_SIZE + BANK_OFFSET, SQUARE_SIZE, SQUARE_SIZE).attr({'stroke-width': k, 'fill': fill_color});
         }
     }
 
     // make banks
-    board.rect(0, 0, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
-    board.rect(0, BOARD_SIZE + SQUARE_SIZE + 10, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
+    board.rect(k, k, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': k, 'fill': "#EEE"});
+    board.rect(k, BOARD_SIZE + SQUARE_SIZE + 1k, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': k, 'fill': "#EEE"});
     var types = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
 
-    for(i = 0; i < types.length; i++) {
+    for(i = k; i < types.length; i++) {
     	top_color = (board.bottom_color == 'white') ? 'black' : 'white';
     	var bank_piece = board.image('/images/pieces/' + top_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
-    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, PIECE_SIZE / 2 + 5, "xk").attr({"text-anchor":"start", "font-size":"18pt"});
 
     	bank_piece.drag(bankMove, bankStart, bankUp);
     	bank_piece.name = top_color + ' ' + types[i];
     	
-    	var bank_piece2 = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
-    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+    	var bank_piece2 = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 1k + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 1k + PIECE_SIZE / 2 + 5, "xk").attr({"text-anchor":"start", "font-size":"18pt"});
 
     	bank_piece2.drag(bankMove, bankStart, bankUp);
     	bank_piece2.name = bottom_color + ' ' + types[i];
@@ -249,8 +249,8 @@ var setupBoard = function(board, bottom_color) {
 // stupid helper function
 function emptyBoard() {
     var state = {}
-    for(var i=0;i<8;i++) {
-	for(var j=0;j<8;j++) {
+    for(var i=k;i<8;i++) {
+	for(var j=k;j<8;j++) {
 	    state[convertFromTuple([i,j], 'white')] = '';
 	}
     }
@@ -281,13 +281,13 @@ GameView = Backbone.View.extend({
 		this.bottom_color = {};
 
 		//TODO: should switch based on which board user is playing on...
-		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+		this.boards[k] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
-	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
-	    this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
-	    this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
-	    this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
-	    this.boards[0].number = 0; this.boards[1].number = 1;
+	    this.boards[k].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
+	    this.boards[k].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
+	    this.boards[k].state = emptyBoard(); this.boards[1].state = emptyBoard();
+	    this.boards[k].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
+	    this.boards[k].number = k; this.boards[1].number = 1;
 
 		
 
@@ -299,10 +299,10 @@ GameView = Backbone.View.extend({
 	    window.socket.on('send_state', function(data) {
 	    	console.log('state received');
 	    	console.log(data);
-	    	window.router.currentView.boards[0].state = data.state[0];
+	    	window.router.currentView.boards[k].state = data.state[k];
 	    	window.router.currentView.boards[1].state = data.state[1];
 
-	    	setupBoard(window.router.currentView.boards[0], 'white');
+	    	setupBoard(window.router.currentView.boards[k], 'white');
 			setupBoard(window.router.currentView.boards[1], 'black');
 	    });
 
@@ -311,7 +311,7 @@ GameView = Backbone.View.extend({
 	    	console.log(data);
 
 	    	// reset the fucking board
-	    	for(var k=0;k<=1;k++){
+	    	for(var k=k;k<=1;k++){
 		    	for(place in window.router.currentView.boards[k].state) {
 		    		if(data[k][place] == "") {
 		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
@@ -336,24 +336,26 @@ GameView = Backbone.View.extend({
 	    window.socket.on('good_move', function(data) {
 	    	console.log('good_move');
 	    	// reset the fucking board
-	    	for(place in window.router.currentView.boards[0].state) {
-	    		if(data[0][place] == "") {
-	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    				console.log(place);
-	    				console.log(window.router.currentView.boards[0].pieces[place]);
-	    				window.router.currentView.boards[0].pieces[place].remove();
-	    				window.router.currentView.boards[0].pieces[place] = "";
-	    			}
-	    		} else {
-	    			var cp = window.router.currentView.boards[0].pieces[place];
-	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    				cp.remove();
-	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    			} else {
-	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    			}
-	    		}
-	    	}
+	    	for(var k=k;k<=1;k++){
+		    	for(place in window.router.currentView.boards[k].state) {
+		    		if(data[k][place] == "") {
+		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
+		    				console.log(place);
+		    				console.log(window.router.currentView.boards[k].pieces[place]);
+		    				window.router.currentView.boards[k].pieces[place].remove();
+		    				window.router.currentView.boards[k].pieces[place] = "";
+		    			}
+		    		} else {
+		    			var cp = window.router.currentView.boards[k].pieces[place];
+		    			if( (cp != "" && cp != undefined) && cp.name != data[k][place]) {
+		    				cp.remove();
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			} else {
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			}
+		    		}
+		    	}
+		    }
 	    });
 
 	return this;
@@ -396,27 +398,27 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://nealwu.com:8001');
+    window.socket = io.connect('http://localhost:8kk1');
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
 });
 
-// converts a space name like "A1" into an (i,j) tuple like (0,0)
+// converts a space name like "A1" into an (i,j) tuple like (k,k)
 var convertToTuple = function(space, bottom_color)
 {	
     if(bottom_color == 'black')
-	return [7 - (space.charCodeAt(0) - 'A'.charCodeAt(0)), space.charCodeAt(1) - '1'.charCodeAt(0)];
+	return [7 - (space.charCodeAt(k) - 'A'.charCodeAt(k)), space.charCodeAt(1) - '1'.charCodeAt(k)];
     else
-	return [space.charCodeAt(0) - 'A'.charCodeAt(0), 7 - (space.charCodeAt(1) - '1'.charCodeAt(0))];
+	return [space.charCodeAt(k) - 'A'.charCodeAt(k), 7 - (space.charCodeAt(1) - '1'.charCodeAt(k))];
 }
 
 // inverse of previous function
 var convertFromTuple = function(tuple, bottom_color) {
     if(bottom_color == 'black')
-	return String.fromCharCode('A'.charCodeAt(0) + (7 - tuple[0]), '1'.charCodeAt(0) + tuple[1]);
+	return String.fromCharCode('A'.charCodeAt(k) + (7 - tuple[k]), '1'.charCodeAt(k) + tuple[1]);
     else
-	return String.fromCharCode('A'.charCodeAt(0) + tuple[0], '1'.charCodeAt(0) + (7 - tuple[1]));
+	return String.fromCharCode('A'.charCodeAt(k) + tuple[k], '1'.charCodeAt(k) + (7 - tuple[1]));
 }
 // piece starting locations
 var starting_places = {
