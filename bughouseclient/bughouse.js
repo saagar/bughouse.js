@@ -257,8 +257,117 @@ function bughouse()
     }
 
   }
+ 
+  this.checkDiagonalMoves = function(boardnum, location, player){
+    var mvs = [];
+    var tuple = convertToTuple(location);
 
-  this.checkHVMoves(boardnum, location, player){
+    var j = tuple[1];
+    // check lower right diagonal
+    for(var i = tuple[0]; i <= 8; i++){
+      j--;
+      // check if valid square
+      if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
+        break;
+      }
+      else {
+        var square = convertToString([tuple[0],i]);
+        var pieceAtSquare = getPieceData(boardnum, square);
+        // if no piece, valid move
+        if(pieceAtSquare[1] == ""){
+          mvs.push(square);
+        }
+        // if piece is not player piece, valid move (capture), and exit loop
+        else if(pieceAtSquare[0] != player){
+          mvs.push(square);
+          break;
+        }
+        // if piece is player piece, invalid move, exit loop
+        else{
+          break;
+        }
+      }
+    }
+    // check upper right diagonal
+    for(var i = tuple[0]; i <= 8; i++){
+      j++;
+      // check if valid square
+      if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
+        break;
+      }
+      else {
+        var square = convertToString([tuple[0],i]);
+        var pieceAtSquare = getPieceData(boardnum, square);
+        // if no piece, valid move
+        if(pieceAtSquare[1] == ""){
+          mvs.push(square);
+        }
+        // if piece is not player piece, valid move (capture), and exit loop
+        else if(pieceAtSquare[0] != player){
+          mvs.push(square);
+          break;
+        }
+        // if piece is player piece, invalid move, exit loop
+        else{
+          break;
+        }
+      }
+    }
+    // check lower left diagonal
+    
+    for(var i = tuple[0]; i >= 0; i++){
+      j--;
+      // check if valid square
+      if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
+        break;
+      }
+      else {
+        var square = convertToString([tuple[0],i]);
+        var pieceAtSquare = getPieceData(boardnum, square);
+        // if no piece, valid move
+        if(pieceAtSquare[1] == ""){
+          mvs.push(square);
+        }
+        // if piece is not player piece, valid move (capture), and exit loop
+        else if(pieceAtSquare[0] != player){
+          mvs.push(square);
+          break;
+        }
+        // if piece is player piece, invalid move, exit loop
+        else{
+          break;
+        }
+      }
+    }
+    
+    // check upper left diagonal
+    for(var i = tuple[0]; i >= 0; i++){
+      j--;
+      // check if valid square
+      if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
+        break;
+      }
+      else {
+        var square = convertToString([tuple[0],i]);
+        var pieceAtSquare = getPieceData(boardnum, square);
+        // if no piece, valid move
+        if(pieceAtSquare[1] == ""){
+          mvs.push(square);
+        }
+        // if piece is not player piece, valid move (capture), and exit loop
+        else if(pieceAtSquare[0] != player){
+          mvs.push(square);
+          break;
+        }
+        // if piece is player piece, invalid move, exit loop
+        else{
+          break;
+        }
+      }
+    }
+  }
+
+  this.checkHVMoves = function(boardnum, location, player){
     var mvs = [];
     var tuple = convertToTuple(location);
 
@@ -345,6 +454,8 @@ function bughouse()
         break;
       }
     }
+
+    return mvs;
   }
 
   // converts a space name like "A1" into a tuple like [1,1]
