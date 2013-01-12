@@ -286,7 +286,7 @@ exports.bughouse = function()
       case "queen":
         // this case can use bishop and rook checks
         var mvs = this.checkDiagonalMoves(boardnum, location, player);
-        mvs.concat(this.checkHVMoves(boardnum, location, player));
+        mvs.push(this.checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
         return this.checkDiagonalMoves(boardnum, location, player);
@@ -382,11 +382,11 @@ exports.bughouse = function()
         }
       }
 
-      var diagleft;
-      var diagright;
+      var diagleftB;
+      var diagrightB;
       if (tuple[0]-1 > 0 && tuple[1]-1 > 0)
       { //if going down and left is still in board
-        diagleft = this.convertToString([tuple[0]-1, tuple[1]-1]);
+        diagleftB = this.convertToString([tuple[0]-1, tuple[1]-1]);
         if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagleft);
         }
@@ -394,7 +394,7 @@ exports.bughouse = function()
 
       if (tuple[0]+1 <= 8 && tuple[1]-1 > 0)
       { //if going down and right is still in board
-        diagright = this.convertToString([tuple[0]+1, tuple[1]-1]);
+        diagrightB = this.convertToString([tuple[0]+1, tuple[1]-1]);
         if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagright);
         }
