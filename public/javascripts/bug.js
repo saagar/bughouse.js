@@ -1,19 +1,18 @@
 LobbyView = Backbone.View.extend({
     el: "#content",
     initialize: function() {
-		//this.render();
+	//this.render();
     }, 
     render: function() {
-		var template = _.template($("#template_lobby").html(), {});
-		this.$el.html(template);
-		return this;
+	var template = _.template($("#template_lobby").html(), {});
+	this.$el.html(template);
+	return this;
     },
     remove: function() {
-		this.$el.empty();
-		return this;
+	this.$el.empty();
+	return this;
     },
 });
-
 
 SQUARE_SIZE = 50;
 PIECE_SIZE = SQUARE_SIZE - 5;
@@ -52,8 +51,20 @@ function getPieceAt(board, i, j) {
 
 function movePiece(board, oi, oj, i, j) {
     var piece = getPieceAt(board, oi, oj);
-    piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
-    piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET);
+    if (piece != null) {
+        var name = piece.data('name');
+        board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE).data('name', name);
+        piece.remove();
+/*
+        piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
+        piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET);
+*/
+    }
+}
+
+function sendMove(board, oi, oj, i, j) {
+    console.log('Sending move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
+    window.socket.emit('send_move', {'from': [oi, oj], 'to': [i, j]});
 }
 
 // piece drag actions
@@ -130,8 +141,7 @@ bankUp = function(event) {
         this.undrag();
         this.drag(move, start, up);
         //var loc = String.fromCharCode('A'.fromCharCode(0));
-
-       
+        sendMove(this.paper, oi, oj, i, j);
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -181,25 +191,38 @@ GameView = Backbone.View.extend({
     el: "#content",
     gameId: null,
     initialize: function() {
-		console.log(this.options.gameId);
+	console.log(this.options.gameId);
+
+	// join given room
+	window.socket.emit('join_room', {room: 'room'});
+
+      socket.on('send_pid', function (data) {
+          console.log("player is #" + data['id']);
+          window.playerid = data['id'];
+        });
     },
     render: function() {
 		var template = _.template($("#template_game").html(), {});
 
 		this.$el.html(template);
-
 		this.boards = {};
 		this.bottom_color = {};
 		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
 
-    	setupBoard(this.boards[0], 'white');
-    	setupBoard(this.boards[1], 'black');
+		setupBoard(this.boards[0], 'white');
+		setupBoard(this.boards[1], 'black');
 
+	    window.socket.on('make_move', function(data) {
+	        var from = data.from;
+	        var to = data.to;
+	        var oi = from[0], oj = from[1];
+	        var i = to[0], j = to[1];
+	        console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
+	        movePiece(window.router.currentView.boards[0], oi, oj, i, j);
+	    });
 
-	    // join given room
-	    window.socket.emit('join', {room: this.options.gameId});
 		return this;
     },
     remove: function() {
@@ -209,34 +232,36 @@ GameView = Backbone.View.extend({
 
 AppRouter = Backbone.Router.extend({
     initialize: function(el) {
-		this.el = el;
-		this.lobbyView = new LobbyView();
+	this.el = el;
+	this.lobbyView = new LobbyView();
     },
     currentView: null,
 
     switchView: function(view) {
-		this.el.html(view.$el.html());
-		view.render();
-		this.currentView = view;
+	this.el.html(view.$el.html());
+	view.render();
+	this.currentView = view;
     },
 
     routes: {
-		"lobby": "showLobby",
-		"game/:id": "showGame"
+	"lobby": "showLobby",
+	"game/:id": "showGame"
     },
 
     showLobby: function() {
-		this.switchView(this.lobbyView);
+	this.switchView(this.lobbyView);
     },
 
     showGame: function(id) {
-		this.switchView(new GameView({'gameId': id}));
+	this.switchView(new GameView({'gameId': id}));
     }
 });
 
 $(document).ready(function() {
-	window.socket = io.connect('http://localhost:8001');
-    var router = new AppRouter($('#content'));
+    console.log('Making the socket');
+    window.socket = io.connect('http://charmander.hcs.harvard.edu:8001');
+
+    window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
 
