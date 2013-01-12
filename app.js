@@ -13,7 +13,7 @@ var app = express();
 
 
 app.configure(function() {
-    app.set('port', process.env.PORT || 8888);
+    app.set('port', process.env.PORT || 8001);
 
     app.set('views', __dirname + '/views');
     app.set('view engine', 'ejs');
@@ -61,7 +61,8 @@ io.sockets.on('connection', function(socket) {
         console.log('Joining ' + data.room);
         socket.join(data.room);
         // add user to room
-        console.log(playerId);
+        console.log("new player is: " + playerId);
+        socket.emit('send_pid',  {id: playerId});
     });
 
     socket.on('send_move', function(data) {

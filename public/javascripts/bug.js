@@ -127,6 +127,11 @@ GameView = Backbone.View.extend({
 
 	// join given room
 	window.socket.emit('join_room', {room: 'room'});
+
+      socket.on('send_pid', function (data) {
+          console.log("player is #" + data['id']);
+          window.playerid = data['id'];
+        });
     },
     render: function() {
 	var template = _.template($("#template_game").html(), {});
@@ -186,7 +191,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://nealwu.com:8888');
+    window.socket = io.connect('http://charmander.hcs.harvard.edu:8001');
 
     window.router = new AppRouter($('#content'));
 
