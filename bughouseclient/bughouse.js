@@ -568,3 +568,7 @@ function bughouse()
     }
   }
 }
+
+var b = new bughouse();
+console.log(b.getJSON());
+
