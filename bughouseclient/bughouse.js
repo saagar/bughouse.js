@@ -325,7 +325,9 @@ exports.bughouse = function()
     var mvs = [];
     var tuple = this.convertToTuple(location);
 
-    if (player == 0)
+    var piece_data = this.getPieceData(boardnum, location);
+
+    if (piece_data[0] == 0)
     { // white pawn
       if (tuple[1] + 1 <= 8){
         var temp = this.convertToString([tuple[0], tuple[1] + 1]);
@@ -365,7 +367,7 @@ exports.bughouse = function()
       }
     }
 
-    else if (player == 1)
+    else if (piece_data[0] == 1)
     { // black player
       if (tuple[1] - 1 > 0){
         var temp3 = this.convertToString([tuple[0], tuple[1] - 1]);
@@ -375,7 +377,7 @@ exports.bughouse = function()
         }
       }
 
-      if (tuple[1] == 7)
+      if (tuple[1] == 6)
       { //also at starting position
         var temp4 = this.convertToString([tuple[0], tuple[1] - 2]);
         if (this.getPieceData(boardnum, temp4)[0] == -1)
@@ -389,16 +391,16 @@ exports.bughouse = function()
       if (tuple[0]-1 > 0 && tuple[1]-1 > 0)
       { //if going down and left is still in board
         diagleftB = this.convertToString([tuple[0]-1, tuple[1]-1]);
-        if (this.getPieceData(boardnum, diagleft)[1] != player){
-          mvs.push(diagleft);
+        if (this.getPieceData(boardnum, diagleftB)[1] != player){
+          mvs.push(diagleftB);
         }
       }
 
       if (tuple[0]+1 <= 8 && tuple[1]-1 > 0)
       { //if going down and right is still in board
         diagrightB = this.convertToString([tuple[0]+1, tuple[1]-1]);
-        if (this.getPieceData(boardnum, diagleft)[1] != player){
-          mvs.push(diagright);
+        if (this.getPieceData(boardnum, diagrightB)[1] != player){
+          mvs.push(diagrightB);
         }
       }
     }
