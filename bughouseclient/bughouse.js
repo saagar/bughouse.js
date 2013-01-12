@@ -479,8 +479,9 @@ exports.bughouse = function()
     // check vertical mvs
       
     // go UP first
-    for(var i = tuple[1]; i <= 8; i++){
+    for(var i = tuple[1]+1; i <= 8; i++){
       var square = this.convertToString([tuple[0],i]);
+      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
@@ -498,8 +499,9 @@ exports.bughouse = function()
       }
     }
     // go DOWN after
-    for(var i = tuple[1]; i >= 0; i--){
+    for(var i = tuple[1]-1; i >= 0; i--){
       var square = this.convertToString([tuple[0],i]);
+      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){
@@ -519,9 +521,10 @@ exports.bughouse = function()
     // check horizontal mvs
 
     // go RIGHT first
-    for(var i = tuple[0]; i <= 8; i++){
+    for(var i = tuple[0]+1; i <= 8; i++){
 
-      var square = this.convertToString([tuple[0],i]);
+      var square = this.convertToString([i,tuple[1]]);
+      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
@@ -538,11 +541,12 @@ exports.bughouse = function()
         break;
       }
     }
-
+    
     // go LEFT after
-    for(var i = tuple[0]; i >= 0; i++){
-
-      var square = this.convertToString([tuple[0],i]);
+    for(var i = tuple[0]-1; i > 0; i--){
+      
+      var square = this.convertToString([i,tuple[1]]);
+      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
@@ -621,7 +625,7 @@ exports.bughouse = function()
   // boardnum should be an int such as 0
   this.getPieceData = function(boardnum, space)
   {
-    console.log(boardnum);
+//    console.log(boardnum);
     var temp = boards[boardnum][space].split(" ");
 
     if (temp[0] === "white") //piece is white
@@ -640,4 +644,4 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.checkHVMoves(0, "F4", "w"));
+console.log(b.checkHVMoves(0, "F4", 0));
