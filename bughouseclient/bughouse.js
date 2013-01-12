@@ -1,8 +1,8 @@
 function bughouse()
 {
     // private variables
-    var board0;
-    var board1;
+    var boards;
+    var boardturns; //0 if it's white's turn, 1 for black (index is the board)
     var reserve0w; //first board, white player's reserve pieces
     var reserve0b; //first board, black player's reserve pieces
     var reserve1w; //second board, white player's reserve pieces
@@ -14,7 +14,7 @@ function bughouse()
   {
     console.log("new bughouse game created.");
     //set board0 and board1 to default start
-    board0 = {
+    var board0 = {
       "A1": "white rook",
       "B1": "white knight",
       "C1": "white bishop",
@@ -81,7 +81,7 @@ function bughouse()
       "H8": "black rook",
     };
 
-    board1 = {
+    var board1 = {
       "A1": "white rook",
       "B1": "white knight",
       "C1": "white bishop",
@@ -148,6 +148,8 @@ function bughouse()
       "H8": "black rook",
     };
 
+    boards = [board0, board1];
+    boardturns = [0,0]; //sets it to white's turn on both boards
     reserve0w = [];
     reserve0b = [];
     reserve1w = [];
@@ -157,13 +159,73 @@ function bughouse()
   // get JSON
   this.getJSON = function()
   {
-    return { "0": board0, "1": board1, "reserve0w": reserve0w, "reserve0b": reserve0b, "reserve1w": reserve1w, "reserve1b": reserve1b };
+    return { "0": boards[0], 
+            "1": boards[1], 
+            "boardturns": boardturns,
+            "reserve0w": reserve0w, 
+            "reserve0b": reserve0b, 
+            "reserve1w": reserve1w, 
+            "reserve1b": reserve1b };
   }
 
   // checks validity of move
   this.move = function(data)
   {
     return;
+  }
+
+  // checks if current position of board 'boardnum' is in check
+  this.isInCheck = function(boardnum)
+  {
+    // gets all squares that the OPPONENT's pieces are attacking
+    if(!boardturns[boardnum]){
+      console.log("white's turn");
+      getAttackedSpaces(0);
+      //check if king is in any of the attacked spaces
+      return false;
+    }
+    else{
+      console.log("black's turn");
+      getAttackedSpaces(1);
+      //check if king is in any of the attacked spaces
+      return false;
+    }
+  }
+
+  this.getAttackedSpaces = function(boardnum)
+  {
+    for (e in boards[boardnum])
+    {
+      //alert(e); //e is going to be the key, that is, for example, "A1"
+      
+    }
+
+
+  }
+
+
+  // returns array of [pieceowner, piecetype]
+  // pieceowner: 0 for white, 1 for black, -1 for empty
+  // piecetype: name of piece, or "nobody".
+
+  // space should be a string such as "A1" and 
+  // boardnum should be an int such as 0
+  this.getPieceData = function(boardnum, space)
+  {
+    var temp = boards[boardnum][space].split(" ");
+
+    if (temp[0] === "white") //piece is white
+    {
+      return [0, temp[1]];
+    }
+    else if (temp[0] === "black") //piece is black
+    {
+      return [1, temp[1]];
+    }
+    else //no piece there
+    {
+      return [1, "nobody"];
+    }
   }
 }
 
