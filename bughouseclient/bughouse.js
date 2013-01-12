@@ -213,6 +213,7 @@ exports.bughouse = function()
             legal = true;
             // change it on the actual board
             boards[moveBoardNum] = moveBoard;
+            boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
           }
         }
       } else {
@@ -230,6 +231,7 @@ exports.bughouse = function()
             legal = true;
             // change it on the actual board
             boards[moveBoardNum] = moveBoard;
+            boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
           }
         }
       }
