@@ -305,24 +305,26 @@ GameView = Backbone.View.extend({
 	    	console.log(data);
 
 	    	// reset the fucking board
-	    	for(place in window.router.currentView.boards[0].state) {
-	    		if(data[0][place] == "") {
-	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    				console.log(place);
-	    				console.log(window.router.currentView.boards[0].pieces[place]);
-	    				window.router.currentView.boards[0].pieces[place].remove();
-	    				window.router.currentView.boards[0].pieces[place] = "";
-	    			}
-	    		} else {
-	    			var cp = window.router.currentView.boards[0].pieces[place];
-	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    				cp.remove();
-	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    			} else {
-	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    			}
-	    		}
-	    	}
+	    	for(var k=0;k<=1;k++){
+		    	for(place in window.router.currentView.boards[k].state) {
+		    		if(data[k][place] == "") {
+		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
+		    				console.log(place);
+		    				console.log(window.router.currentView.boards[k].pieces[place]);
+		    				window.router.currentView.boards[k].pieces[place].remove();
+		    				window.router.currentView.boards[k].pieces[place] = "";
+		    			}
+		    		} else {
+		    			var cp = window.router.currentView.boards[k].pieces[place];
+		    			if( (cp != "" && cp != undefined) && cp.name != data[k][place]) {
+		    				cp.remove();
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			} else {
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			}
+		    		}
+		    	}
+		    }
 	    });
 
 	    window.socket.on('good_move', function(data) {
