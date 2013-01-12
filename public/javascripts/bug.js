@@ -1,18 +1,19 @@
 LobbyView = Backbone.View.extend({
     el: "#content",
     initialize: function() {
-	//this.render();
+		//this.render();
     }, 
     render: function() {
-	var template = _.template($("#template_lobby").html(), {});
-	this.$el.html(template);
-	return this;
+		var template = _.template($("#template_lobby").html(), {});
+		this.$el.html(template);
+		return this;
     },
     remove: function() {
-	this.$el.empty();
-	return this;
+		this.$el.empty();
+		return this;
     },
 });
+
 
 SQUARE_SIZE = 60;
 PIECE_SIZE = SQUARE_SIZE - 5;
@@ -98,21 +99,25 @@ GameView = Backbone.View.extend({
     el: "#content",
     gameId: null,
     initialize: function() {
-	console.log(this.options.gameId);
+		console.log(this.options.gameId);
     },
     render: function() {
-	var template = _.template($("#template_game").html(), {});
+		var template = _.template($("#template_game").html(), {});
 
-	this.$el.html(template);
+		this.$el.html(template);
 
-	this.boards = {};
-	this.bottom_color = {};
-	this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE);
-    	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE);
+		this.boards = {};
+		this.bottom_color = {};
+		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE);
+	    	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE);
 
-    	setupBoard(this.boards[0], 'white');
-    	setupBoard(this.boards[1], 'black');
-	return this;
+	    	setupBoard(this.boards[0], 'white');
+	    	setupBoard(this.boards[1], 'black');
+
+
+	    // join given room
+	    window.socket.emit('join', {room: this.options.gameId});
+		return this;
     },
     remove: function() {
 
@@ -121,35 +126,39 @@ GameView = Backbone.View.extend({
 
 AppRouter = Backbone.Router.extend({
     initialize: function(el) {
-	this.el = el;
-	this.lobbyView = new LobbyView();
+		this.el = el;
+		this.lobbyView = new LobbyView();
     },
     currentView: null,
 
     switchView: function(view) {
-	this.el.html(view.$el.html());
-	view.render();
-	this.currentView = view;
+		this.el.html(view.$el.html());
+		view.render();
+		this.currentView = view;
     },
 
     routes: {
-	"lobby": "showLobby",
-	"game/:id": "showGame"
+		"lobby": "showLobby",
+		"game/:id": "showGame"
     },
 
     showLobby: function() {
-	this.switchView(this.lobbyView);
+		this.switchView(this.lobbyView);
     },
 
     showGame: function(id) {
-	this.switchView(new GameView({'gameId': id}));
+		this.switchView(new GameView({'gameId': id}));
     }
 });
 
 $(document).ready(function() {
+	window.socket = io.connect('http://localhost:8001');
     var router = new AppRouter($('#content'));
 
     Backbone.history.start();
+
+    
+
 });
 
 // piece starting locations

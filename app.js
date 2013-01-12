@@ -6,7 +6,8 @@ var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , everyauth = require('everyauth');
 
 var app = express();
 
@@ -30,6 +31,12 @@ app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
+
+var games = {};
+
+var users = {};
+var user_count = 0;
+
 app.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
@@ -45,3 +52,11 @@ var server = http.createServer(app).listen(app.get('port'), function() {
 });
 
 var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function(socket) {
+  var playerId = ++user_count;
+  socket.on('join', function(data) {
+    // add user to room
+    console.log(playerId);
+  });
+});
