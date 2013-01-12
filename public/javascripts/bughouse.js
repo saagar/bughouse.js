@@ -15,23 +15,24 @@ $(document).ready(function() {
 		var i, j;
 		i = place.charCodeAt(0) - 65;
 		j = place.charCodeAt(1) - 49;
-		if(bottom_color == 'white') j = 7 - j;
+		if(bottom_color == 'white') j = 7 - j; // flip board if necessary
 		return paper.image('/images/pieces/' + name + '.svg', square_size * i + piece_offset, square_size * j + piece_offset, piece_size, piece_size);
 	}
 
+
+	// intialize board rectangles
 	var board_squares = {};
 	var i, j;
 	for( i = 0 ; i < 8 ; i++ ) {
 		board_squares[i] = {};
-		for ( j = 0 ; j < 8 ; j++ ) {
-			// light brown and dark brown
-			var fill_color = ((i + j) % 2 == 0) ? "#f0d9b5" : "#b58863";
+		for ( j = 0 ; j < 8 ; j++ ) {	
+			var fill_color = ((i + j) % 2 == 0) ? "#f0d9b5" : "#b58863"; // light brown : dark brown
 			board_squares[i][j] = paper.rect(i * square_size, j * square_size, square_size, square_size).attr({'stroke-width': 0, 'fill': fill_color});
 		}
 	}
 
 	
-
+	// piece drag actions
 	var start = function () {    
 	  this.ox = this.attr("x");         
 	  this.oy = this.attr("y");         
@@ -42,6 +43,14 @@ $(document).ready(function() {
 	},
 	up = function () {
 	  this.animate({r: 50, opacity: 1}, 500, ">");
+
+	  // get square center of piece is in
+	  var i = Math.floor((this.attr("x") + piece_size / 2) / square_size),
+	  	  j = Math.floor((this.attr("y") + piece_size / 2) / square_size);
+
+	  // snap piece to center of square
+	  this.attr("x", square_size * i + piece_offset);
+	  this.attr("y", square_size * j + piece_offset);
 	};
 
 	for(var place in starting_places) {
