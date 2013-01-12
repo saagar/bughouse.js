@@ -31,10 +31,41 @@ app.configure('development', function() {
     app.use(express.errorHandler());
 });
 
+// converts a space name like "A1" into an (i,j) tuple like (0,0)
+var convertToTuple = function(space, bottom_color)
+{   
+    if(bottom_color == 'black')
+        return [7 - (space.charCodeAt(0) - 'A'.charCodeAt(0)), space.charCodeAt(1) - '1'.charCodeAt(0)];
+    else
+        return [space.charCodeAt(0) - 'A'.charCodeAt(0), 7 - (space.charCodeAt(1) - '1'.charCodeAt(0))];
+}
+
+// inverse of previous function
+var convertFromTuple = function(tuple, bottom_color) {
+    if(bottom_color == 'black')
+        return String.fromCharCode('A'.charCodeAt(0) + (7 - tuple[0]), '1'.charCodeAt(0) + tuple[1]);
+    else
+        return String.fromCharCode('A'.charCodeAt(0) + tuple[0], '1'.charCodeAt(0) + (7 - tuple[1]));
+}
+
+
+// stupid helper function
+function emptyBoard() {
+    var state = {}
+    for(var i=0;i<8;i++) {
+        for(var j=0;j<8;j++) {
+            state[convertFromTuple([i,j], 'white')] = default_board[convertFromTuple([i,j], 'white')];
+        }
+    }
+    return state;
+}
+
 var Game = function() {
-    this.board_state = {};
-    this.players = [];
+    this.pieces = [emptyBoard(), emptyBoard()];
+    this.turns = ['white', 'white'];
+    this.players = {};
     this.timer = null;
+    this.started = false;
 
 }
 
@@ -60,9 +91,12 @@ var server = http.createServer(app).listen(app.get('port'), function() {
 
 var io = require('socket.io').listen(server);
 
+
+
 io.sockets.on('connection', function(socket) {
     console.log('Socket connected');
     var playerId = ++user_count;
+    var room = null;
 
     socket.on('join_room', function(data) {
         console.log('Joining ' + data.room);
@@ -70,14 +104,120 @@ io.sockets.on('connection', function(socket) {
             // create a new room
             games[data.room] = new Game();
         }
+
+        games[data.room].players[playerId] = 1;
         socket.join(data.room);
+        room = data.room;
         // add user to room
         console.log("new player is: " + playerId);
         socket.emit('send_state',  {id: playerId, state: games[data.room]});
     });
 
-    socket.on('send_move', function(data) {
-        console.log('Making move ' + data);
-        io.sockets.in('room').emit('make_move', data);
+    var leaveRoom = function(roomName) {
+        console.log(games[roomName].players);
+        delete games[roomName].players[playerId];
+        console.log(games[roomName].players);
+        socket.leave(roomName);
+    }
+
+    socket.on('leave_room', function(data) {
+        leaveRoom(data.room);
     });
+
+    socket.on('send_move', function(data) {
+        
+        console.log('send_move ' + JSON.stringify(data));
+        //console.log(games[room].pieces[data.board]);
+        // update room state
+        data.name = games[room].pieces[data.board][data.from];
+        if(data.name.slice(0, 5) == games[room].turns[data.board]) {
+
+            if(games[room].pieces[data.board][data.from] != '') {
+                console.log('Updating state');
+                games[room].pieces[data.board][data.to] = games[room].pieces[data.board][data.from];
+                console.log(games[room].pieces[data.board][data.from]);
+                games[room].pieces[data.board][data.from] = '';
+                data.name = games[room].pieces[data.board][data.to];
+            }
+
+            console.log('Making move ' + JSON.stringify(data) + ' in game ' + room + ' on board ' + data.board);
+            
+            io.sockets.in(room).emit('make_move', data);
+        }
+    });
+
+    socket.on('disconnect', function() {
+        if(room != null) {
+            leaveRoom(room);
+        }
+    });
+
 });
+
+
+var default_board = {
+      "A1": "white rook",
+      "B1": "white knight",
+      "C1": "white bishop",
+      "D1": "white queen",
+      "E1": "white king",
+      "F1": "white bishop",
+      "G1": "white knight",
+      "H1": "white rook",
+      "A2": "white pawn",
+      "B2": "white pawn",
+      "C2": "white pawn",
+      "D2": "white pawn",
+      "E2": "white pawn",
+      "F2": "white pawn",
+      "G2": "white pawn",
+      "H2": "white pawn",
+      "A3": "",
+      "B3": "",
+      "C3": "",
+      "D3": "",
+      "E3": "",
+      "F3": "",
+      "G3": "",
+      "H3": "",
+      "A4": "",
+      "B4": "",
+      "C4": "",
+      "D4": "",
+      "E4": "",
+      "F4": "",
+      "G4": "",
+      "H4": "",
+      "A5": "",
+      "B5": "",
+      "C5": "",
+      "D5": "",
+      "E5": "",
+      "F5": "",
+      "G5": "",
+      "H5": "",
+      "A6": "",
+      "B6": "",
+      "C6": "",
+      "D6": "",
+      "E6": "",
+      "F6": "",
+      "G6": "",
+      "H6": "",   
+      "A7": "black pawn",
+      "B7": "black pawn",
+      "C7": "black pawn",
+      "D7": "black pawn",
+      "E7": "black pawn",
+      "F7": "black pawn",
+      "G7": "black pawn",
+      "H7": "black pawn",
+      "A8": "black rook",
+      "B8": "black knight",
+      "C8": "black bishop",
+      "D8": "black queen",
+      "E8": "black king",
+      "F8": "black bishop",
+      "G8": "black knight",
+      "H8": "black rook",
+    };
