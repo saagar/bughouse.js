@@ -288,7 +288,7 @@ exports.bughouse = function()
       case "queen":
         // this case can use bishop and rook checks
         var mvs = this.checkDiagonalMoves(boardnum, location, player);
-        mvs.push(this.checkHVMoves(boardnum, location, player));
+        mvs.concat(this.checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
         return this.checkDiagonalMoves(boardnum, location, player);
@@ -327,10 +327,20 @@ exports.bughouse = function()
 
     if (player == 0)
     { // white pawn
-      mvs.push(this.convertToString([tuple[0], tuple[1] + 1]));
+      if (tuple[1] + 1 <= 8){
+        var temp = this.convertToString([tuple[0], tuple[1] + 1]);
+        if (this.getPieceData(boardnum, temp)[0] == -1)
+        {
+          mvs.push(temp);
+        }
+      }
       if (tuple[1] == 2)
       { //also at starting position
-        mvs.push(this.convertToString([tuple[0], tuple[1] + 2]));
+        var temp2 = this.convertToString([tuple[0], tuple[1] + 2]);
+        if (this.getPieceData(boardnum, temp2)[0] == -1)
+        {
+          mvs.push(temp2);
+        }
       }
 
       var diagleft;
@@ -357,10 +367,21 @@ exports.bughouse = function()
 
     else if (player == 1)
     { // black player
-      mvs.push(this.convertToString([tuple[0], tuple[1] - 1]));
+      if (tuple[1] - 1 > 0){
+        var temp3 = this.convertToString([tuple[0], tuple[1] - 1]);
+        if (this.getPieceData(boardnum, temp3)[0] == -1)
+        {
+          mvs.push(temp3);
+        }
+      }
+
       if (tuple[1] == 7)
       { //also at starting position
-        mvs.push(this.convertToString([tuple[0], tuple[1] - 2]));
+        var temp4 = this.convertToString([tuple[0], tuple[1] - 2]);
+        if (this.getPieceData(boardnum, temp4)[0] == -1)
+        {
+          mvs.push(temp4);
+        }
       }
 
       var diagleft;
