@@ -31,7 +31,7 @@ $(document).ready(function() {
     }
 
     // piece drag actions
-    var start = function () {    
+    var start = function (event) {    
         this.ox = this.attr("x");         
         this.oy = this.attr("y");         
         this.animate({r: 70, opacity: .5}, 500, ">");     
@@ -39,12 +39,12 @@ $(document).ready(function() {
     move = function (dx, dy) {
         this.attr({x: this.ox + dx, y: this.oy + dy});     
     },
-    up = function () {
+    up = function (event) {
         this.animate({r: 50, opacity: 1}, 500, ">");
 
         // get square center of piece is in
-        var i = Math.floor((this.attr("x") + PIECE_SIZE / 2) / SQUARE_SIZE),
-        j = Math.floor((this.attr("y") + PIECE_SIZE / 2) / SQUARE_SIZE);
+        var i = Math.floor(event.layerX / SQUARE_SIZE),
+            j = Math.floor(event.layerY / SQUARE_SIZE);
 
         // snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
