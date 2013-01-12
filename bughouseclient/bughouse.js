@@ -161,10 +161,32 @@ exports.bughouse = function()
     boards = [board0, board1];
     boardturns = [0,0]; //sets it to white's turn on both boards
     reserve = {
-      "0w" : [],
-      "0b" : [],
-      "1w" : [],
-      "1b" : [],
+      "1":
+      {
+        "white pawn": 0,
+        "white knight": 0,
+        "white bishop": 0,
+        "white rook": 0,
+        "white queen": 0,
+        "black pawn": 0,
+        "black knight": 0,
+        "black bishop": 0,
+        "black rook": 0,
+        "black queen": 0
+      },
+      "2":
+      {
+        "white pawn": 0,
+        "white knight": 0,
+        "white bishop": 0,
+        "white rook": 0,
+        "white queen": 0,
+        "black pawn": 0,
+        "black knight": 0,
+        "black bishop": 0,
+        "black rook": 0,
+        "black queen": 0       
+      }
     };
   }()
 
@@ -220,7 +242,7 @@ exports.bughouse = function()
             // We are capturing
             if (moveBoard[toLoc] != "") {
               var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
-              reserve[boardPlayerTuple].push(capturedPiece);
+              reserve[boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
             }
             moveBoard[toLoc] = moveBoard[fromLoc];
             moveBoard[fromLoc] = "";
