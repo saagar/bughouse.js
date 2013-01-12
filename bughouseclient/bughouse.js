@@ -218,18 +218,21 @@ exports.bughouse = function()
         }
       } else {
         //if current situation is not check, check if move is legal
-        var moveBoard = boards[moveBoardNum];
-        console.log(_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor)));
+          var moveBoard = this.copyBoard(boards[moveBoardNum]);
         if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           // We are capturing
-          console.log("can attack");
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
             reserve[boardPlayerTuple].push(capturedPiece);
           }
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
-          legal = true;
+          if (!this.isInCheck(moveBoardNum)) {
+            legal = true;
+            // change it on the actual board
+            boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
+            boards[moveBoardNum][fromLoc] = "";
+          }
         }
       }
     }
@@ -492,7 +495,6 @@ exports.bughouse = function()
       }
       else {
         var square = this.convertToString([i,j]);
-        console.log(square);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -520,7 +522,6 @@ exports.bughouse = function()
       }
       else {
         var square = this.convertToString([i,j]);
-        console.log(square);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
