@@ -52,7 +52,7 @@ exports.bughouse = function()
       "A4": "",
       "B4": "",
       "C4": "",
-      "D4": "",
+      "D4": "white queen",
       "E4": "",
       "F4": "",
       "G4": "",
@@ -76,7 +76,7 @@ exports.bughouse = function()
       "A7": "black pawn",
       "B7": "black pawn",
       "C7": "black pawn",
-      "D7": "black pawn",
+      "D7": "",
       "E7": "black pawn",
       "F7": "black pawn",
       "G7": "black pawn",
@@ -209,17 +209,16 @@ exports.bughouse = function()
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
           // make sure we're not in check
-          if (!this.isInCheck(moveBoardNum)) {
+          if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
             legal = true;
             // change it on the actual board
-            boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
-            boards[moveBoardNum][fromLoc] = "";
+            boards[moveBoardNum] = moveBoard;
           }
         }
       } else {
         //if current situation is not check, check if move is legal
-          var moveBoard = this.copyBoard(boards[moveBoardNum]);
         if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
+          var moveBoard = this.copyBoard(boards[moveBoardNum]);
           // We are capturing
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
@@ -227,18 +226,17 @@ exports.bughouse = function()
           }
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
-          if (!this.isInCheck(moveBoardNum)) {
+          if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
             legal = true;
             // change it on the actual board
-            boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
-            boards[moveBoardNum][fromLoc] = "";
+            boards[moveBoardNum] = moveBoard;
           }
         }
       }
     }
-    
     var json = this.getJSON();
     json['wasLegal'] = legal;
+    console.log(json);
     return json;
   }
 
@@ -254,10 +252,44 @@ exports.bughouse = function()
     }
     else{
       //console.log("black's turn");
-      thia.getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
+      this.getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
       //check if king is in any of the attacked spaces
       return false;
     }
+    return true;
+  }
+
+  this.isInCheckBoard = function(board, boardnum)
+  {
+    // gets all squares that the OPPONENT's pieces are attacking
+    if(!boardturns[boardnum]){
+      //console.log("white's turn");
+      this.getBoardAttackedSpaces(board, 1, boardnum); //gets spaces being attacked by black
+      //check if king is in any of the attacked spaces
+      return false;
+    }
+    else{
+      //console.log("black's turn");
+      this.getBoardAttackedSpaces(board, 0, boardnum); //get spaces being attacked by white
+      //check if king is in any of the attacked spaces
+      return false;
+    }
+    return true;
+  }
+
+  this.getBoardAttackedSpaces = function(board, player, boardnum)
+  {
+    attackedSpaces = [];
+
+    for (e in board)
+    {
+      var tempPiece = this.getPieceData(boardnum, e)
+      if (tempPiece[0] == player)
+      { //boardnumber, type of piece, piece's location, player owning the piece
+        attackedSpaces = _.union(attackedSpaces, this.getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
+      }
+    }
+    return attackedSpaces;
   }
 
   // returns list of all spaces being attacked legally by the specified 
@@ -739,7 +771,7 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.move("0w_D1-C8"));
+b.move("0w_D4-D7");
 //console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
