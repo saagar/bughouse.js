@@ -188,37 +188,48 @@ exports.bughouse = function()
 
   // checks validity of move 
   // data: "0b_F2-G4"
-  // data: "@"
+  // data: "0w:queen_b4"
   this.move = function(data)
   {
     // get the board
     var moveBoardNum = parseInt(data.charAt(0));
     // get the color on the board
     var moveColor = data.charAt(1) == 'w' ? 0 : 1;
-    var boardPlayerTuple = data.substring(0, 2);
-    var fromLoc = data.substring(3, 5);
-    var toLoc = data.substring(6);
-    var piece = this.getPieceData(moveBoardNum, fromLoc)[1];
-    var legal = false;
-    // There is no piece
-    if (piece != "") {
-      //first check if the current situation before moving is check
-      if (this.isInCheck(moveBoardNum)) {
-        //if current situation is not check, check if move is legal
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
-          var moveBoard = this.copyBoard(boards[moveBoardNum]);
-          // We are capturing
-          if (moveBoard[toLoc] != "") {
-            var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
-            reserve[boardPlayerTuple].push(capturedPiece);
-          }
-          moveBoard[toLoc] = moveBoard[fromLoc];
-          moveBoard[fromLoc] = "";
-          if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
-            legal = true;
-            // change it on the actual board
-            boards[moveBoardNum] = moveBoard;
-            boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
+    if (data.charAt(2) == ":") {
+      var toLoc = data.split('_')[2];
+      piece = data.split(':')[1].split('_')[0];
+      boardPiece = this.getPieceData(moveBoardNum, toLoc);
+      if (boardPiece == "") {
+        boards[moveBoardNum][toLoc] = piece;
+        legal = true;
+        boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
+      }
+    } else {
+      var boardPlayerTuple = data.substring(0, 2);
+      var fromLoc = data.substring(3, 5);
+      var toLoc = data.substring(6);
+      var piece = this.getPieceData(moveBoardNum, fromLoc)[1];
+      var legal = false;
+      // There is no piece
+      if (piece != "") {
+        //first check if the current situation before moving is check
+        if (this.isInCheck(moveBoardNum)) {
+          //if current situation is not check, check if move is legal
+          if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
+            var moveBoard = this.copyBoard(boards[moveBoardNum]);
+            // We are capturing
+            if (moveBoard[toLoc] != "") {
+              var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
+              reserve[boardPlayerTuple].push(capturedPiece);
+            }
+            moveBoard[toLoc] = moveBoard[fromLoc];
+            moveBoard[fromLoc] = "";
+            if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
+              legal = true;
+              // change it on the actual board
+              boards[moveBoardNum] = moveBoard;
+              boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
+            }
           }
         }
       }
