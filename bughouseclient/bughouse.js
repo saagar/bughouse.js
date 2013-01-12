@@ -223,10 +223,11 @@ exports.bughouse = function()
       var toLoc = data.split('_')[1];
       piece = data.split(':')[1].split('_')[0];
       boardPiece = this.getPieceData(moveBoardNum, toLoc);
-      if (boardPiece[1] == "") {
+      if (boardPiece[1] == "" && reserve[moveBoardNum][(moveColor == 0 ? "white " : "black ") + piece] > 0) {
         boards[moveBoardNum][toLoc] = (moveColor == 0 ? 'white ' : 'black ') + piece;
         legal = true;
         boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
+        reserve[moveBoardNum][(moveColor == 0 ? "white " : "black ") + piece] -= 1;
       }
     } else {
       var boardPlayerTuple = data.substring(0, 2);
@@ -243,7 +244,7 @@ exports.bughouse = function()
           // We are capturing
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
-            reserve[boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
+            reserve[1-boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
           }
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
