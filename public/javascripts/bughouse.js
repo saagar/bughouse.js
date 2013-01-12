@@ -15,7 +15,7 @@ $(document).ready(function() {
         i = place.charCodeAt(0) - 'A'.charCodeAt(0);
         j = place.charCodeAt(1) - '1'.charCodeAt(0);
         if (bottom_color == 'white')
-                j = 7 - j; // flip board if necessary
+            j = 7 - j; // flip board if necessary
         return paper.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
     }
 
@@ -31,15 +31,15 @@ $(document).ready(function() {
     }
 
     // piece drag actions
-    var start = function (event) {    
-        this.ox = this.attr("x");         
-        this.oy = this.attr("y");         
-        this.animate({r: 70, opacity: .5}, 500, ">");     
+    var start = function(event) {
+        this.ox = this.attr("x");
+        this.oy = this.attr("y");
+        this.animate({r: 70, opacity: 1}, 500, ">");
     },
-    move = function (dx, dy) {
-        this.attr({x: this.ox + dx, y: this.oy + dy});     
+    move = function(dx, dy) {
+        this.attr({x: this.ox + dx, y: this.oy + dy});
     },
-    up = function (event) {
+    up = function(event) {
         this.animate({r: 50, opacity: 1}, 500, ">");
 
         // get square center of piece is in
