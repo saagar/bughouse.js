@@ -49,14 +49,13 @@ function getPieceAt(board, i, j) {
     return null;
 }
 
-function movePiece(board, from, to) {
+function movePiece(board, from, to, name) {
 	var op = convertToTuple(from, board.bottom_color),
 	    p = convertToTuple(to, board.bottom_color);
 	var oi = op[0], oj = op[1], i = p[0], j = p[1];
-	console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
+	console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
     var piece = board.pieces[from];
     if (piece != null) {
-        var name = piece.name;
         var new_piece = board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
         new_piece.name = name;
         new_piece.drag(move, start, up);
@@ -73,8 +72,8 @@ function movePiece(board, from, to) {
 function sendMove(board, oi, oj, i, j) {
 	var op = convertFromTuple([oi, oj], board.bottom_color),
 		p =  convertFromTuple([i, j], board.bottom_color);
-    console.log('Sending move from ' + op + ' to ' + p);
-    window.socket.emit('send_move', {'from': op, 'to': p});
+    console.log('Sending move from ' + op + ' to ' + p + ' on board ' + board.number);
+    window.socket.emit('send_move', {'from': op, 'to': p, 'board': board.number});
 }
 
 // piece drag actions
@@ -82,6 +81,7 @@ var start = function(event) {
     this.ox = this.attr("x");
     this.oy = this.attr("y");
     this.animate({r: 70, opacity: 1}, 500, ">");
+     console.log(JSON.stringify(this.position));
 },
 move = function(dx, dy) {
     var nowX, nowY;
@@ -106,7 +106,7 @@ up = function(event) {
         // Get the original position
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
-
+        // console.log(this.position[0] + ' ' + this.position[1]);
         sendMove(this.paper, this.position[0], this.position[1], i, j);
     } else {
         // otherwise return to original position
@@ -185,23 +185,26 @@ var setupBoard = function(board, bottom_color) {
     	bank_piece.drag(bankMove, bankStart, bankUp);
     	bank_piece.name = top_color + ' ' + types[i];
     	
-    	bank_piece = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    	var bank_piece2 = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
     	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
 
-    	bank_piece.drag(bankMove, bankStart, bankUp);
-    	bank_piece.name = bottom_color + ' ' + types[i];
+    	bank_piece2.drag(bankMove, bankStart, bankUp);
+    	bank_piece2.name = bottom_color + ' ' + types[i];
 	}
-	
-
+	// console.log('board state');
+	// console.log(board.state);
 	// TODO: update with game state, right now just placing default board
-    for (var place in starting_places) {
-        var piece = placePiece(board, starting_places[place], place, bottom_color);
-        piece.position = convertToTuple(place, board.bottom_color);
-        board.pieces[place] = piece;
-        piece.drag(move, start, up);
+    for (var place in board.state) {
+    	if(board.state[place] != '') {
+	        var piece = placePiece(board, board.state[place], place, bottom_color);
+	        piece.position = convertToTuple(place, board.bottom_color);
+	 		// console.log(board.state[place] + " " + JSON.stringify(piece.position));
+	        board.pieces[place] = piece;
+	        piece.drag(move, start, up);
+	    }
     }
 
-    console.log(board.pieces);
+    // console.log(board.pieces);
 }
 
 
@@ -225,7 +228,7 @@ GameView = Backbone.View.extend({
 	console.log('joined game ' + this.options.gameId);
 
 	// join given room
-	window.socket.emit('join_room', {room: 'room'});
+	window.socket.emit('join_room', {room: this.options.gameId});
 
       socket.on('send_pid', function (data) {
           console.log("player is #" + data['id']);
@@ -244,19 +247,33 @@ GameView = Backbone.View.extend({
 	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
 	    this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
+	    this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
+	    this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
+	    this.boards[0].number = 0; this.boards[1].number = 1;
 
-		setupBoard(this.boards[0], 'white');
-		setupBoard(this.boards[1], 'black');
+		
 
 	    window.socket.on('make_move', function(data) {
 	        
-	        movePiece(window.router.currentView.boards[0], data.from, data.to);
+	        movePiece(window.router.currentView.boards[data.board], data.from, data.to, data.name);
+	    });
+
+	    window.socket.on('send_state', function(data) {
+	    	console.log('state received');
+	    	console.log(data);
+	    	window.router.currentView.boards[0].state = data.state.pieces[0];
+	    	window.router.currentView.boards[1].state = data.state.pieces[1];
+
+	    	setupBoard(window.router.currentView.boards[0], 'white');
+			setupBoard(window.router.currentView.boards[1], 'black');
 	    });
 
 		return this;
     },
     remove: function() {
-
+    	console.log('leaving game ' + this.options.gameId);
+    	// join given room
+		window.socket.emit('leave_room', {room: this.options.gameId});
     }
 });
 
@@ -268,9 +285,11 @@ AppRouter = Backbone.Router.extend({
     currentView: null,
 
     switchView: function(view) {
-	this.el.html(view.$el.html());
-	view.render();
-	this.currentView = view;
+    	if(this.currentView != null)
+    		this.currentView.remove();
+		this.el.html(view.$el.html());
+		view.render();
+		this.currentView = view;
     },
 
     routes: {
