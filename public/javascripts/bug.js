@@ -365,8 +365,7 @@ AppRouter = Backbone.Router.extend({
 
     switchView: function(view) {
     	if(this.currentView != null)
-    		this.currentView.remove();
-		this.el.html(view.$el.html());
+    		this.currentView.remove(); this.el.html(view.$el.html());
 		view.render();
 		this.currentView = view;
     },
@@ -388,7 +387,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://charmander.hcs.harvard.edu:8001');
+    window.socket = io.connect('http://localhost:8001');
 
     window.router = new AppRouter($('#content'));
 
