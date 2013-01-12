@@ -594,7 +594,7 @@ exports.bughouse = function()
       }
     }
     // go DOWN after
-    for(var i = tuple[1]-1; i >= 0; i--){
+    for(var i = tuple[1]-1; i > 0; i--){
       var square = this.convertToString([tuple[0],i]);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       // if no piece, valid move
