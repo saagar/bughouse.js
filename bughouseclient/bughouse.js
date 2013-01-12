@@ -3,11 +3,8 @@ function bughouse()
     // private variables
     var boards;
     var boardturns; //0 if it's white's turn, 1 for black (index is the board)
-    var reserve0w; //first board, white player's reserve pieces
-    var reserve0b; //first board, black player's reserve pieces
-    var reserve1w; //second board, white player's reserve pieces
-    var reserve1b; //second board, black player's reserve pieces
-    //use reserve0w.push("nameofpiece") to add to array
+    var reserve; //first board, white player's reserve pieces
+    //use reserve['0w'].push("nameofpiece") to add to array
 
     var knightMoves = {
       "1": [2,1],
@@ -161,10 +158,12 @@ function bughouse()
 
     boards = [board0, board1];
     boardturns = [0,0]; //sets it to white's turn on both boards
-    reserve0w = [];
-    reserve0b = [];
-    reserve1w = [];
-    reserve1b = [];
+    reserve = {
+      "0w" : [];
+      "0b" : [];
+      "1w" : [];
+      "1b" : [];
+    };
   }()
 
   // get JSON
@@ -179,23 +178,63 @@ function bughouse()
             "reserve1b": reserve1b };
   }
 
+  this.copyBoard = function(board) {
+    var newBoard = {};
+    for (e in board) {
+      newBoard[e] = board[e];
+    }
+    return newBoard;
+  }
+
   // checks validity of move 
-  // data: "0b_f2-g4"
+  // data: "0b_F2-G4"
   this.move = function(data)
   {
-    //first check if the current situation before moving is check
-    //if so, then check if next move is also check
-    // if so, then not legal.
-    // if not, then check if move is legal
-    // if so, then ok
-    //if not, then its wrong
-
-    //if current situation is not check, check if move is legal
-    //if so, make sure second position is not check
-    //if not check then legal
-
-
-    return;
+    // get the board
+    var moveBoardNum = int(data.charAt(0));
+    // get the color on the board
+    var moveColor = data.charAt(1);
+    var boardPlayerTuple = data.substring(0, 2);
+    var fromLoc = data.substring(3, 5);
+    var toLoc = data.substring(6);
+    var piece = getPieceData(moveBoardNum, fromLoc);
+    var legal = false;
+    // There is no piece
+    if (piece != "") {
+      //first check if the current situation before moving is check
+      if (isInCheck(moveBoardNum)) {
+        // Check if it is a legal move
+        if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+          var moveBoard = copyBoard(boards[moveBoardNum]);
+          moveBoard[toLoc] = moveBoard[fromLoc];
+          moveBoard[fromLoc] = "";
+          // make sure we're not in check
+          if (!isInCheck(moveBoardNum)) {
+            legal = true;
+            // change it on the actual board
+            boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
+            boards[moveBoardNum][fromLoc] = "";
+          }
+        }
+      } else {
+        //if current situation is not check, check if move is legal
+        if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+          var moveBoard = boards[moveBoardNum];
+          // We are capturing
+          if (moveBoard[toLoc] != "") {
+            var capturedPiece = getPieceData(moveBoardNum, toLoc);
+            reserve[boardPlayerTuple].push(capturedPiece);
+          }
+          moveBoard[toLoc] = moveBoard[fromLoc];
+          moveBoard[fromLoc] = "";
+          legal = true;
+        }
+      }
+    }
+    
+    var json = getJSON();
+    json['wasLegal'] = legal;
+    return json;
   }
 
   // checks if current position of board 'boardnum' is in check
@@ -227,7 +266,7 @@ function bughouse()
       var tempPiece = getPieceData(boardnum, e)
       if (tempPiece[0] == player)
       { //boardnumber, type of piece, piece's location, player owning the piece
-        attackedSpaces = _union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
+        attackedSpaces = _.union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
       }
     }
     return attackedSpaces;
