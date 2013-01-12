@@ -135,8 +135,8 @@ up = function(event) {
         // console.log(this.position[0] + ' ' + this.position[1]);
 
         // update in pieces array;
-        this.paper.pieces[convertFromTuple([this.position[0], this.position[1]], this.paper.bottom_color)] = "";
-        this.paper.pieces[convertFromTuple([i,j], this.paper.bottom_color)] = this;
+        //this.paper.pieces[convertFromTuple([this.position[0], this.position[1]], this.paper.bottom_color)] = "";
+        //this.paper.pieces[convertFromTuple([i,j], this.paper.bottom_color)] = this;
 
         sendMove(this.paper, this.position[0], this.position[1], i, j);
     } else {
@@ -326,6 +326,7 @@ GameView = Backbone.View.extend({
 	    });
 
 	    window.socket.on('good_move', function(data) {
+	    	console.log('good_move');
 	    	// reset the fucking board
 	    	for(place in window.router.currentView.boards[0].state) {
 	    		if(data[0][place] == "") {

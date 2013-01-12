@@ -193,7 +193,7 @@ exports.bughouse = function()
     // get the board
     var moveBoardNum = parseInt(data.charAt(0));
     // get the color on the board
-    var moveColor = data.charAt(1);
+    var moveColor = data.charAt(1) == 'w' ? 0 : 1;
     var boardPlayerTuple = data.substring(0, 2);
     var fromLoc = data.substring(3, 5);
     var toLoc = data.substring(6);
