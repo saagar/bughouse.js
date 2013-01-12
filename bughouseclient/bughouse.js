@@ -219,8 +219,10 @@ exports.bughouse = function()
       } else {
         //if current situation is not check, check if move is legal
         var moveBoard = boards[moveBoardNum];
+        console.log(_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor)));
         if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           // We are capturing
+          console.log("can attack");
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
             reserve[boardPlayerTuple].push(capturedPiece);
@@ -286,7 +288,7 @@ exports.bughouse = function()
       case "queen":
         // this case can use bishop and rook checks
         var mvs = this.checkDiagonalMoves(boardnum, location, player);
-        mvs.concat(this.checkHVMoves(boardnum, location, player));
+        mvs.push(this.checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
         return this.checkDiagonalMoves(boardnum, location, player);
@@ -382,11 +384,11 @@ exports.bughouse = function()
         }
       }
 
-      var diagleft;
-      var diagright;
+      var diagleftB;
+      var diagrightB;
       if (tuple[0]-1 > 0 && tuple[1]-1 > 0)
       { //if going down and left is still in board
-        diagleft = this.convertToString([tuple[0]-1, tuple[1]-1]);
+        diagleftB = this.convertToString([tuple[0]-1, tuple[1]-1]);
         if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagleft);
         }
@@ -394,7 +396,7 @@ exports.bughouse = function()
 
       if (tuple[0]+1 <= 8 && tuple[1]-1 > 0)
       { //if going down and right is still in board
-        diagright = this.convertToString([tuple[0]+1, tuple[1]-1]);
+        diagrightB = this.convertToString([tuple[0]+1, tuple[1]-1]);
         if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagright);
         }
@@ -734,8 +736,10 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
+console.log(b.move("0w_D1-C8"));
+//console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
-console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
+//console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "knight","E4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "queen","D4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "king","H4", 0));
