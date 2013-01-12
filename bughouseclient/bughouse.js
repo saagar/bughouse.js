@@ -298,6 +298,31 @@ exports.bughouse = function()
     }
   }
 
+  this.checkKnightMoves = function(boardnum, location, player){
+    var mvs = [];
+    var tuple = this.convertToTuple(location);
+
+    for (e in knightMoves)
+    {
+      var newTuple = [tuple[0] + knightMoves[e][0], tuple[1] + knightMoves[e][1]];
+      if (newTuple[0] > 0 && newTuple[0] <= 8 && newTuple[1] > 0 && newTuple[1] <= 8)
+      { // space is on board
+        newString = this.convertToString(newTuple);
+        var temp1 = this.getPieceData(boardnum, newString);
+        if (temp1[1] === "") // if empty, then it's valid
+        {
+          mvs.push(newString);
+        }
+
+        else if (temp1[0] != player){ //if piece not player, capture
+          mvs.push(newString);
+        }
+      }
+    }
+
+    return mvs;
+  }
+
   this.checkKingMoves = function(boardnum, location, player){
     var mvs = [];
     var sqs = [];
