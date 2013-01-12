@@ -403,6 +403,8 @@ exports.bughouse = function()
         }
       }
     }
+
+    j = tuple[1];
     // check upper right diagonal
     for(var i = tuple[0]+1; i <= 8; i++){
       j++;
@@ -412,6 +414,7 @@ exports.bughouse = function()
       }
       else {
         var square = this.convertToString([i,j]);
+        console.log(square);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -428,9 +431,10 @@ exports.bughouse = function()
         }
       }
     }
+
+    j = tuple[1];
     // check lower left diagonal
-    
-    for(var i = tuple[0]-1; i >= 0; i++){
+    for(var i = tuple[0]-1; i >= 0; i--){
       j--;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
@@ -438,6 +442,7 @@ exports.bughouse = function()
       }
       else {
         var square = this.convertToString([i,j]);
+        console.log(square);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -455,9 +460,10 @@ exports.bughouse = function()
       }
     }
     
+    j = tuple[1];
     // check upper left diagonal
-    for(var i = tuple[0]-1; i >= 0; i++){
-      j--;
+    for(var i = tuple[0]-1; i >= 0; i--){
+      j++;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
         break;
@@ -654,8 +660,8 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
+//console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
 console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
-console.log(b.getSinglePieceAttackSquares(0, "knight","E4", 0));
-console.log(b.getSinglePieceAttackSquares(0, "queen","D4", 0));
-console.log(b.getSinglePieceAttackSquares(0, "king","H4", 0));
+//console.log(b.getSinglePieceAttackSquares(0, "knight","E4", 0));
+//console.log(b.getSinglePieceAttackSquares(0, "queen","D4", 0));
+//console.log(b.getSinglePieceAttackSquares(0, "king","H4", 0));
