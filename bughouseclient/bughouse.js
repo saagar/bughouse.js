@@ -286,7 +286,7 @@ exports.bughouse = function()
       case "queen":
         // this case can use bishop and rook checks
         var mvs = this.checkDiagonalMoves(boardnum, location, player);
-        mvs.push(this.checkHVMoves(boardnum, location, player));
+        mvs.concat(this.checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
         return this.checkDiagonalMoves(boardnum, location, player);
