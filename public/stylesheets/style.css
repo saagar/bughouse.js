@@ -1,8 +1,54 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+#boards_container {
+	text-align: center;
+}
+
+.right-container {
+	margin-left: 20px;
+}
+
+.board-container {
+	display: inline-block;
+}
+
+#game_title {
+	text-align: center;
+}
+
+.time {
+	font-weight: bold;
+}
+
+.username {
+	font-weight: bold;
+}
+
+
+/* Lobby CSS */
+
+#games_wrapper {
+	
+}
+
+.game-list, .user-list {
+	border: 1px solid #AAA;
+	list-style: none;
+	height: 600px;
+	padding-left: 20px;
+}
+
+.game-list li {
+	margin-right: 20px;
+	padding: 5px;
+}
+
+.game-list li:hover {
+	background-color: #EEE;
 }

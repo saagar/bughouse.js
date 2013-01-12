@@ -7,11 +7,73 @@
     <script type="text/javascript" src="/javascripts/jquery.js"></script>
     <script type="text/javascript" src="/javascripts/raphael-min.js"></script>
     <script type="text/javascript" src="/javascripts/bughouse.js"></script>
+    <link rel="stylesheet" href="/stylesheets/foundation.css">
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <div id="board_container">
-    	
+
+    <nav class="top-bar">
+      <ul>
+        <!-- Title Area -->
+        <li class="name">
+          <h1>
+            <a href="#">
+              Online Bughouse
+            </a>
+          </h1>
+        </li>
+        <li class="toggle-topbar"><a href="#"></a></li>
+      </ul>
+
+      <section>
+        <!-- Right Nav Section -->
+        <ul class="right">
+          <li class="divider show-for-medium-and-up"></li>
+          <li class="has-dropdown">
+            <a href="#">Item 2</a>
+            <ul class="dropdown">
+              <li><label>Section Name</label></li>
+              <li><a href="#" class="">Level 1</a></li>
+              <li><a href="#">Dropdown Option</a></li>
+              <li><a href="#">Dropdown Option</a></li>
+              <li class="divider"></li>
+              <li><label>Section Name</label></li>
+              <li><a href="#">Dropdown Option</a></li>
+              <li><a href="#">Dropdown Option</a></li>
+              <li><a href="#">Dropdown Option</a></li>
+              <li class="divider"></li>
+              <li><a href="#">See all &rarr;</a></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+    </nav>
+
+    <div class="row">
+    	<div id="game_title">
+    		<h4>neal_wu, m vs. feesix, rayman</h4>
+    	</div>
+    	<div id="boards_container">
+    		<div class="board-container">
+	    		<div class="time left">05:00</div>
+	    		<div class="username right">feesix</div>
+		  		<div id="board1_container" class="board"></div>
+		  		
+		  		<div class="username right">m</div>
+		  		<div class="time left">05:00</div>
+		  	</div>
+		  	<div class="board-container right-container">
+		  		<div class="time right">05:00</div>
+		  		<div class="username left">rayman</div>
+		  		<div id="board2_container" class="board"></div>
+		  		<div class="time right">05:00</div>
+		  		<div class="username left">neal_wu</div>
+		  	</div>
+	   		
+
+	  	</div>
     </div>
+  	
+    
   </body>
 </html>
