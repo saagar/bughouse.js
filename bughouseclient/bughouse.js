@@ -313,9 +313,8 @@ exports.bughouse = function()
         {
           mvs.push(newString);
         }
-
+        console.log("player" + player.toString());
         else if (temp1[0] != player){ //if piece not player, capture
-          console.log("player" + player.toString());
           mvs.push(newString);
         }
       }
