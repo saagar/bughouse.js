@@ -38,7 +38,7 @@ function placePiece(board, name, place, bottom_color) {
 function getPieceAt(board, i, j) {
     // Get the center of the appropriate square
     var x = i * SQUARE_SIZE + PIECE_OFFSET;
-    var y = j * SQUARE_SIZE + PIECE_OFFSET;
+    var y = j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET;
     var elements = board.getElementsByPoint(x, y);
 
     for (i in elements) {
@@ -49,11 +49,19 @@ function getPieceAt(board, i, j) {
     return null;
 }
 
-function movePiece(board, oi, oj, i, j) {
-    var piece = getPieceAt(board, oi, oj);
+function movePiece(board, from, to) {
+	var op = convertToTuple(from, board.bottom_color),
+	    p = convertToTuple(to, board.bottom_color);
+	var oi = op[0], oj = op[1], i = p[0], j = p[1];
+	console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
+    var piece = board.pieces[from];
     if (piece != null) {
-        var name = piece.data('name');
-        board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE).data('name', name);
+        var name = piece.name;
+        var new_piece = board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
+        new_piece.name = name;
+        new_piece.drag(move, start, up);
+        new_piece.position = convertToTuple(to, board.bottom_color);
+        board.pieces[to] = new_piece;
         piece.remove();
 /*
         piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
@@ -63,8 +71,10 @@ function movePiece(board, oi, oj, i, j) {
 }
 
 function sendMove(board, oi, oj, i, j) {
-    console.log('Sending move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
-    window.socket.emit('send_move', {'from': [oi, oj], 'to': [i, j]});
+	var op = convertFromTuple([oi, oj], board.bottom_color),
+		p =  convertFromTuple([i, j], board.bottom_color);
+    console.log('Sending move from ' + op + ' to ' + p);
+    window.socket.emit('send_move', {'from': op, 'to': p});
 }
 
 // piece drag actions
@@ -96,7 +106,8 @@ up = function(event) {
         // Get the original position
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
-        console.log(this.name + " moved");
+
+        sendMove(this.paper, this.position[0], this.position[1], i, j);
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -161,6 +172,7 @@ var setupBoard = function(board, bottom_color) {
         }
     }
 
+    // make banks
     board.rect(0, 0, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
     board.rect(0, BOARD_SIZE + SQUARE_SIZE + 10, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
     var types = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
@@ -179,19 +191,38 @@ var setupBoard = function(board, bottom_color) {
     	bank_piece.drag(bankMove, bankStart, bankUp);
     	bank_piece.name = bottom_color + ' ' + types[i];
 	}
+	
 
-
+	// TODO: update with game state, right now just placing default board
     for (var place in starting_places) {
         var piece = placePiece(board, starting_places[place], place, bottom_color);
+        piece.position = convertToTuple(place, board.bottom_color);
+        board.pieces[place] = piece;
         piece.drag(move, start, up);
     }
+
+    console.log(board.pieces);
 }
+
+
+// stupid helper function
+function emptyBoard() {
+	var state = {}
+	for(var i=0;i<8;i++) {
+		for(var j=0;j<8;j++) {
+			state[convertFromTuple([i,j], 'white')] = '';
+		}
+	}
+	return state;
+}
+
+
 
 GameView = Backbone.View.extend({
     el: "#content",
     gameId: null,
     initialize: function() {
-	console.log(this.options.gameId);
+	console.log('joined game ' + this.options.gameId);
 
 	// join given room
 	window.socket.emit('join_room', {room: 'room'});
@@ -207,20 +238,19 @@ GameView = Backbone.View.extend({
 		this.$el.html(template);
 		this.boards = {};
 		this.bottom_color = {};
+
+		//TODO: should switch based on which board user is playing on...
 		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
 	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
+	    this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
 
 		setupBoard(this.boards[0], 'white');
 		setupBoard(this.boards[1], 'black');
 
 	    window.socket.on('make_move', function(data) {
-	        var from = data.from;
-	        var to = data.to;
-	        var oi = from[0], oj = from[1];
-	        var i = to[0], j = to[1];
-	        console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j);
-	        movePiece(window.router.currentView.boards[0], oi, oj, i, j);
+	        
+	        movePiece(window.router.currentView.boards[0], data.from, data.to);
 	    });
 
 		return this;
@@ -259,7 +289,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://charmander.hcs.harvard.edu:8001');
+    window.socket = io.connect('http://localhost:8001');
 
     window.router = new AppRouter($('#content'));
 
@@ -269,6 +299,22 @@ $(document).ready(function() {
 
 });
 
+// converts a space name like "A1" into an (i,j) tuple like (0,0)
+var convertToTuple = function(space, bottom_color)
+{	
+	if(bottom_color == 'black')
+		return [7 - (space.charCodeAt(0) - 'A'.charCodeAt(0)), space.charCodeAt(1) - '1'.charCodeAt(0)];
+	else
+		return [space.charCodeAt(0) - 'A'.charCodeAt(0), 7 - (space.charCodeAt(1) - '1'.charCodeAt(0))];
+}
+
+// inverse of previous function
+var convertFromTuple = function(tuple, bottom_color) {
+	if(bottom_color == 'black')
+		return String.fromCharCode('A'.charCodeAt(0) + (7 - tuple[0]), '1'.charCodeAt(0) + tuple[1]);
+	else
+		return String.fromCharCode('A'.charCodeAt(0) + tuple[0], '1'.charCodeAt(0) + (7 - tuple[1]));
+}
 // piece starting locations
 var starting_places = {
     'A1': 'white rook',
