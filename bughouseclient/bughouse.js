@@ -42,38 +42,38 @@ function bughouse()
       "F2": "white pawn",
       "G2": "white pawn",
       "H2": "white pawn",
-      "A3": "nobody",
-      "B3": "nobody",
-      "C3": "nobody",
-      "D3": "nobody",
-      "E3": "nobody",
-      "F3": "nobody",
-      "G3": "nobody",
-      "H3": "nobody",
-      "A4": "nobody",
-      "B4": "nobody",
-      "C4": "nobody",
-      "D4": "nobody",
-      "E4": "nobody",
-      "F4": "nobody",
-      "G4": "nobody",
-      "H4": "nobody",
-      "A5": "nobody",
-      "B5": "nobody",
-      "C5": "nobody",
-      "D5": "nobody",
-      "E5": "nobody",
-      "F5": "nobody",
-      "G5": "nobody",
-      "H5": "nobody",
-      "A6": "nobody",
-      "B6": "nobody",
-      "C6": "nobody",
-      "D6": "nobody",
-      "E6": "nobody",
-      "F6": "nobody",
-      "G6": "nobody",
-      "H6": "nobody",   
+      "A3": "",
+      "B3": "",
+      "C3": "",
+      "D3": "",
+      "E3": "",
+      "F3": "",
+      "G3": "",
+      "H3": "",
+      "A4": "",
+      "B4": "",
+      "C4": "",
+      "D4": "",
+      "E4": "",
+      "F4": "",
+      "G4": "",
+      "H4": "",
+      "A5": "",
+      "B5": "",
+      "C5": "",
+      "D5": "",
+      "E5": "",
+      "F5": "",
+      "G5": "",
+      "H5": "",
+      "A6": "",
+      "B6": "",
+      "C6": "",
+      "D6": "",
+      "E6": "",
+      "F6": "",
+      "G6": "",
+      "H6": "",   
       "A7": "black pawn",
       "B7": "black pawn",
       "C7": "black pawn",
@@ -109,38 +109,38 @@ function bughouse()
       "F2": "white pawn",
       "G2": "white pawn",
       "H2": "white pawn",
-      "A3": "nobody",
-      "B3": "nobody",
-      "C3": "nobody",
-      "D3": "nobody",
-      "E3": "nobody",
-      "F3": "nobody",
-      "G3": "nobody",
-      "H3": "nobody",
-      "A4": "nobody",
-      "B4": "nobody",
-      "C4": "nobody",
-      "D4": "nobody",
-      "E4": "nobody",
-      "F4": "nobody",
-      "G4": "nobody",
-      "H4": "nobody",
-      "A5": "nobody",
-      "B5": "nobody",
-      "C5": "nobody",
-      "D5": "nobody",
-      "E5": "nobody",
-      "F5": "nobody",
-      "G5": "nobody",
-      "H5": "nobody",
-      "A6": "nobody",
-      "B6": "nobody",
-      "C6": "nobody",
-      "D6": "nobody",
-      "E6": "nobody",
-      "F6": "nobody",
-      "G6": "nobody",
-      "H6": "nobody",   
+      "A3": "",
+      "B3": "",
+      "C3": "",
+      "D3": "",
+      "E3": "",
+      "F3": "",
+      "G3": "",
+      "H3": "",
+      "A4": "",
+      "B4": "",
+      "C4": "",
+      "D4": "",
+      "E4": "",
+      "F4": "",
+      "G4": "",
+      "H4": "",
+      "A5": "",
+      "B5": "",
+      "C5": "",
+      "D5": "",
+      "E5": "",
+      "F5": "",
+      "G5": "",
+      "H5": "",
+      "A6": "",
+      "B6": "",
+      "C6": "",
+      "D6": "",
+      "E6": "",
+      "F6": "",
+      "G6": "",
+      "H6": "",   
       "A7": "black pawn",
       "B7": "black pawn",
       "C7": "black pawn",
@@ -179,7 +179,8 @@ function bughouse()
             "reserve1b": reserve1b };
   }
 
-  // checks validity of move
+  // checks validity of move 
+  // data: "0b_f2-g4"
   this.move = function(data)
   {
     //first check if the current situation before moving is check
@@ -202,23 +203,33 @@ function bughouse()
   {
     // gets all squares that the OPPONENT's pieces are attacking
     if(!boardturns[boardnum]){
-      console.log("white's turn");
-      getAttackedSpaces(0);
+      //console.log("white's turn");
+      getAttackedSpaces(boardnum, 1); //gets spaces being attacked by black
       //check if king is in any of the attacked spaces
       return false;
     }
     else{
-      console.log("black's turn");
-      getAttackedSpaces(1);
+      //console.log("black's turn");
+      getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
       //check if king is in any of the attacked spaces
       return false;
     }
   }
 
-  this.getAttackedSpaces = function(boardnum)
+  // returns list of all spaces being attacked legally by the specified 
+  // player on the specified board
+  this.getAttackedSpaces = function(boardnum, player)
   {
+    attackedSpaces = [];
+
     for (e in boards[boardnum])
     {
+      var tempPiece = getPieceData(boardnum, e)
+      if (tempPiece[0] == player)
+      { //boardnumber, type of piece, piece's location, player owning the piece
+        getSinglePieceAttackSquares(boardnum, tempPiece[1], e)
+      }
+
       //alert(e); //e is going to be the key, that is, for example, "A1"
 
     }
@@ -226,7 +237,16 @@ function bughouse()
 
   }
 
-  // converts a space name like "A1" into a tuple like (1,1)
+  // example: 0, "knight", "A1", 1
+  this.getSinglePieceAttackSquares(boardnum, piece, location, player)
+  {
+
+
+  }
+
+  this.
+
+  // converts a space name like "A1" into a tuple like [1,1]
   this.convertToTuple = function(space)
   {
     switch(space.charAt(0))
@@ -253,7 +273,7 @@ function bughouse()
 
   // returns array of [pieceowner, piecetype]
   // pieceowner: 0 for white, 1 for black, -1 for empty
-  // piecetype: name of piece, or "nobody".
+  // piecetype: name of piece, or "".
 
   // space should be a string such as "A1" and 
   // boardnum should be an int such as 0
@@ -271,7 +291,7 @@ function bughouse()
     }
     else //no piece there
     {
-      return [1, "nobody"];
+      return [-1, ""];
     }
   }
 }
