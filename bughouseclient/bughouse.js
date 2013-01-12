@@ -54,7 +54,7 @@ exports.bughouse = function()
       "C4": "",
       "D4": "",
       "E4": "",
-      "F4": "",
+      "F4": "white rook",
       "G4": "",
       "H4": "",
       "A5": "",

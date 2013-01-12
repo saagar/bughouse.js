@@ -67,7 +67,10 @@
       
       <div class="row">
         <div class="nine columns" id="games_wrapper">
-          <h4> Games </h4>
+          <div>
+            <h4 class='header'> Games </h4>
+            <a class="button" id="new_game" href="#">New Game</a>
+          </div>
           <ul class='game-list'>
             <li><a href="#game/1">game #1324
               feesix, m, neal_wu, rayman</a></li>
@@ -84,6 +87,13 @@
           </ul>
         </div>
       </div>
+    </script>
+
+    <script type="text/html" id="template_game_list">
+        <% for(id in games) { %>
+        <li><a href="#game/<%=id%>">game #<%=id%>
+          feesix, m, neal_wu, rayman</a></li>
+        <% } %>
     </script>
 
 
