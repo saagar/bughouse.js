@@ -8,8 +8,6 @@ $(document).ready(function() {
 
     // intialize board
     var paper = Raphael("board_container", BOARD_SIZE, BOARD_SIZE);
-    var circle = paper.circle(50, 40, 10);
-    
     var bottom_color = 'white';
 
     var placePiece = function(name, place) {
@@ -33,10 +31,10 @@ $(document).ready(function() {
     }
 
     // piece drag actions
-    var start = function () {    
-	this.ox = this.attr("x");         
-	this.oy = this.attr("y");         
-	this.animate({r: 70, opacity: .5}, 500, ">");     
+    var start = function () {
+	this.ox = this.attr("x");
+	this.oy = this.attr("y");
+	this.animate({r: 70, opacity: .5}, 500, ">");
     },
     move = function (dx, dy) {
 	this.attr({x: this.ox + dx, y: this.oy + dy});     
