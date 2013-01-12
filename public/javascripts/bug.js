@@ -4,29 +4,29 @@ LobbyView = Backbone.View.extend({
 	//this.render();
     }, 
     render: function() {
-	var template = _.template($("#template_lobby").html(), {});
+		var template = _.template($("#template_lobby").html(), {});
 
-	window.socket.on('room_created', function(data) {
-	    window.router.navigate("game/" + data.room, {trigger: true});
-	});
+		window.socket.on('room_created', function(data) {
+			window.router.navigate("game/" + data.room, {trigger: true});
+		});
 
-	window.socket.on('game_list', function(data) {
-	    console.log(data);
-	    var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">game #<%=id%>feesix, m, neal_wu, rayman</a></li><% } %>', {games: data});
-	    $('.game-list').html(template);
+		window.socket.on('game_list', function(data) {
+			console.log(data);
+			var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">game #<%=id%>feesix, m, neal_wu, rayman</a></li><% } %>', {games: data});
+			$('.game-list').html(template);
 
-	});
+		});
 
-	this.$el.html(template);
-	$('#new_game').click(function(event) {
-	    event.preventDefault();
-	    window.socket.emit('request_room');
-	});
-	return this;
+		this.$el.html(template);
+		$('#new_game').click(function(event) {
+			event.preventDefault();
+			window.socket.emit('request_room');
+		});
+		return this;
     },
     remove: function() {
-	this.$el.empty();
-	return this;
+		this.$el.empty();
+		return this;
     },
 });
 
@@ -76,10 +76,10 @@ function getPieceAt(board, i, j) {
 
 function movePiece(board, from, to, name) {
 
-    var op = convertToTuple(from, board.bottom_color),
-    p = convertToTuple(to, board.bottom_color);
-    var oi = op[0], oj = op[1], i = p[0], j = p[1];
-    console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
+	var op = convertToTuple(from, board.bottom_color),
+	    p = convertToTuple(to, board.bottom_color);
+	var oi = op[0], oj = op[1], i = p[0], j = p[1];
+	console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
     var piece = board.pieces[from];
     if (piece != "") {
         var new_piece = board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
@@ -88,16 +88,16 @@ function movePiece(board, from, to, name) {
         new_piece.position = convertToTuple(to, board.bottom_color);
         board.pieces[to] = new_piece;
         piece.remove();
-        /*
-          piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
-          piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET);
-        */
+/*
+        piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
+        piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET);
+*/
     }
 }
 
 function sendMove(board, oi, oj, i, j) {
-    var op = convertFromTuple([oi, oj], board.bottom_color),
-    p =  convertFromTuple([i, j], board.bottom_color);
+	var op = convertFromTuple([oi, oj], board.bottom_color),
+		p =  convertFromTuple([i, j], board.bottom_color);
     console.log('Attempting move from ' + op + ' to ' + p + ' on board ' + board.number);
     window.socket.emit('send_move', {'from': op, 'to': p, 'board': board.number});
 }
@@ -107,7 +107,7 @@ var start = function(event) {
     this.ox = this.attr("x");
     this.oy = this.attr("y");
     this.animate({r: 70, opacity: 1}, 500, ">");
-    console.log(JSON.stringify(this.position));
+     console.log(JSON.stringify(this.position));
 },
 move = function(dx, dy) {
     var nowX, nowY;
@@ -122,7 +122,7 @@ up = function(event) {
 
     // get square center of piece is in
     var i = Math.floor(event.layerX / SQUARE_SIZE),
-    j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
+        j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
 
     if(0 <= i && i < 8 && 0 <= j && j < 8) {
         // if valid square, snap piece to center of square
@@ -147,29 +147,29 @@ up = function(event) {
 };
 
 var bankStart = function(event) {
-    var new_bank_piece = this.clone().drag(bankMove, bankStart, bankUp);
-    new_bank_piece.name = this.name;
+	var new_bank_piece = this.clone().drag(bankMove, bankStart, bankUp);
+	new_bank_piece.name = this.name;
     this.ox = this.attr("x");
     this.oy = this.attr("y");
     this.animate({r: 70, opacity: 1}, 500, ">");
 };
 
 var bankMove = function(dx, dy) {
-    this.dragged = 1;
+	this.dragged = 1;
     var nowX, nowY;
     nowX = Math.max(0, this.ox + dx);
     nowY = Math.max(0, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
     nowY = Math.min(BOARD_SIZE + 2 * BANK_OFFSET - PIECE_SIZE, nowY); 
     this.attr({x: nowX, y: nowY});
-};
+},
 
-var bankUp = function(event) {
+bankUp = function(event) {
     this.animate({r: 50, opacity: 1}, 500, ">");
 
     // get square center of piece is in
     var i = Math.floor(event.layerX / SQUARE_SIZE),
-    j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
+        j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
 
     if(0 <= i && i < 8 && 0 <= j && j < 8) {
         // if valid square, snap piece to center of square
@@ -184,11 +184,6 @@ var bankUp = function(event) {
         this.drag(move, start, up);
         //var loc = String.fromCharCode('A'.fromCharCode(0));
         sendMove(this.paper, oi, oj, i, j);
-
-        var place = convertFromTuple([i, j], this.paper.bottom_color);
-        var piece = placePiece(this.paper, this.paper.state[place], place, this.paper.bottom_color);
-        piece.position = [i, j];
-        this.paper.pieces[place] = piece;
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -226,20 +221,19 @@ var setupBoard = function(board, bottom_color) {
 
     	bank_piece2.drag(bankMove, bankStart, bankUp);
     	bank_piece2.name = bottom_color + ' ' + types[i];
-    }
-
-    // console.log('board state');
-    // console.log(board.state);
-    // TODO: update with game state, right now just placing default board
+	}
+	// console.log('board state');
+	// console.log(board.state);
+	// TODO: update with game state, right now just placing default board
     for (var place in board.state) {
     	// clear squares which should be empty
     	if(board.state[place] != '') {
-	    var piece = placePiece(board, board.state[place], place, bottom_color);
-	    piece.position = convertToTuple(place, board.bottom_color);
-	    // console.log(board.state[place] + " " + JSON.stringify(piece.position));
-	    board.pieces[place] = piece;
-	    
-	}
+	        var piece = placePiece(board, board.state[place], place, bottom_color);
+	        piece.position = convertToTuple(place, board.bottom_color);
+	 		// console.log(board.state[place] + " " + JSON.stringify(piece.position));
+	        board.pieces[place] = piece;
+	        
+	    }
     }
 
     // console.log(board.pieces);
@@ -248,13 +242,13 @@ var setupBoard = function(board, bottom_color) {
 
 // stupid helper function
 function emptyBoard() {
-    var state = {}
-    for(var i=0;i<8;i++) {
-	for(var j=0;j<8;j++) {
-	    state[convertFromTuple([i,j], 'white')] = '';
+	var state = {}
+	for(var i=0;i<8;i++) {
+		for(var j=0;j<8;j++) {
+			state[convertFromTuple([i,j], 'white')] = '';
+		}
 	}
-    }
-    return state;
+	return state;
 }
 
 
@@ -268,98 +262,98 @@ GameView = Backbone.View.extend({
 	// join given room
 	window.socket.emit('join_room', {room: this.options.gameId});
 
-        socket.on('send_pid', function (data) {
-            console.log("player is #" + data['id']);
-            window.playerid = data['id'];
+      socket.on('send_pid', function (data) {
+          console.log("player is #" + data['id']);
+          window.playerid = data['id'];
         });
     },
     render: function() {
-	var template = _.template($("#template_game").html(), {});
+		var template = _.template($("#template_game").html(), {});
 
-	this.$el.html(template);
-	this.boards = {};
-	this.bottom_color = {};
+		this.$el.html(template);
+		this.boards = {};
+		this.bottom_color = {};
 
-	//TODO: should switch based on which board user is playing on...
-	this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
-	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
-	this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
-	this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
-	this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
-	this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
-	this.boards[0].number = 0; this.boards[1].number = 1;
+		//TODO: should switch based on which board user is playing on...
+		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
+	    this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
+	    this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
+	    this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
+	    this.boards[0].number = 0; this.boards[1].number = 1;
 
-	
+		
 
-	window.socket.on('make_move', function(data) {
-	    
-	    movePiece(window.router.currentView.boards[data.board], data.from, data.to, data.name);
-	});
+	    window.socket.on('make_move', function(data) {
+	        
+	        movePiece(window.router.currentView.boards[data.board], data.from, data.to, data.name);
+	    });
 
-	window.socket.on('send_state', function(data) {
-	    console.log('state received');
-	    console.log(data);
-	    window.router.currentView.boards[0].state = data.state[0];
-	    window.router.currentView.boards[1].state = data.state[1];
+	    window.socket.on('send_state', function(data) {
+	    	console.log('state received');
+	    	console.log(data);
+	    	window.router.currentView.boards[0].state = data.state[0];
+	    	window.router.currentView.boards[1].state = data.state[1];
 
-	    setupBoard(window.router.currentView.boards[0], 'white');
-	    setupBoard(window.router.currentView.boards[1], 'black');
-	});
+	    	setupBoard(window.router.currentView.boards[0], 'white');
+			setupBoard(window.router.currentView.boards[1], 'black');
+	    });
 
-	window.socket.on('bad_move', function(data) {
-	    console.log('bad move');
-	    console.log(data);
+	    window.socket.on('bad_move', function(data) {
+	    	console.log('bad move');
+	    	console.log(data);
 
-	    // reset the fucking board
-	    for(place in window.router.currentView.boards[0].state) {
-	    	if(data[0][place] == "") {
-	    	    if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    		console.log(place);
-	    		console.log(window.router.currentView.boards[0].pieces[place]);
-	    		window.router.currentView.boards[0].pieces[place].remove();
-	    		window.router.currentView.boards[0].pieces[place] = "";
-	    	    }
-	    	} else {
-	    	    var cp = window.router.currentView.boards[0].pieces[place];
-	    	    if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    		cp.remove();
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    } else {
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    }
+	    	// reset the fucking board
+	    	for(place in window.router.currentView.boards[0].state) {
+	    		if(data[0][place] == "") {
+	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
+	    				console.log(place);
+	    				console.log(window.router.currentView.boards[0].pieces[place]);
+	    				window.router.currentView.boards[0].pieces[place].remove();
+	    				window.router.currentView.boards[0].pieces[place] = "";
+	    			}
+	    		} else {
+	    			var cp = window.router.currentView.boards[0].pieces[place];
+	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
+	    				cp.remove();
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			} else {
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			}
+	    		}
 	    	}
-	    }
-	});
+	    });
 
-	window.socket.on('good_move', function(data) {
-	    console.log('good_move');
-	    // reset the fucking board
-	    for(place in window.router.currentView.boards[0].state) {
-	    	if(data[0][place] == "") {
-	    	    if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    		console.log(place);
-	    		console.log(window.router.currentView.boards[0].pieces[place]);
-	    		window.router.currentView.boards[0].pieces[place].remove();
-	    		window.router.currentView.boards[0].pieces[place] = "";
-	    	    }
-	    	} else {
-	    	    var cp = window.router.currentView.boards[0].pieces[place];
-	    	    if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    		cp.remove();
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    } else {
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    }
+	    window.socket.on('good_move', function(data) {
+	    	console.log('good_move');
+	    	// reset the fucking board
+	    	for(place in window.router.currentView.boards[0].state) {
+	    		if(data[0][place] == "") {
+	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
+	    				console.log(place);
+	    				console.log(window.router.currentView.boards[0].pieces[place]);
+	    				window.router.currentView.boards[0].pieces[place].remove();
+	    				window.router.currentView.boards[0].pieces[place] = "";
+	    			}
+	    		} else {
+	    			var cp = window.router.currentView.boards[0].pieces[place];
+	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
+	    				cp.remove();
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			} else {
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			}
+	    		}
 	    	}
-	    }
-	});
+	    });
 
-	return this;
+		return this;
     },
     remove: function() {
     	console.log('leaving game ' + this.options.gameId);
     	// join given room
-	window.socket.emit('leave_room', {room: this.options.gameId});
+		window.socket.emit('leave_room', {room: this.options.gameId});
     }
 });
 
@@ -372,9 +366,9 @@ AppRouter = Backbone.Router.extend({
 
     switchView: function(view) {
     	if(this.currentView != null)
-    	    this.currentView.remove(); this.el.html(view.$el.html());
-	view.render();
-	this.currentView = view;
+    		this.currentView.remove(); this.el.html(view.$el.html());
+		view.render();
+		this.currentView = view;
     },
 
     routes: {
@@ -388,33 +382,37 @@ AppRouter = Backbone.Router.extend({
 
     showGame: function(id) {
 
-	this.switchView(new GameView({'gameId': id}));
+		this.switchView(new GameView({'gameId': id}));
     }
 });
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://nealwu.com:8001');
+    window.socket = io.connect('http://localhost:8001');
+
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
+
+    
+
 });
 
 // converts a space name like "A1" into an (i,j) tuple like (0,0)
 var convertToTuple = function(space, bottom_color)
 {	
-    if(bottom_color == 'black')
-	return [7 - (space.charCodeAt(0) - 'A'.charCodeAt(0)), space.charCodeAt(1) - '1'.charCodeAt(0)];
-    else
-	return [space.charCodeAt(0) - 'A'.charCodeAt(0), 7 - (space.charCodeAt(1) - '1'.charCodeAt(0))];
+	if(bottom_color == 'black')
+		return [7 - (space.charCodeAt(0) - 'A'.charCodeAt(0)), space.charCodeAt(1) - '1'.charCodeAt(0)];
+	else
+		return [space.charCodeAt(0) - 'A'.charCodeAt(0), 7 - (space.charCodeAt(1) - '1'.charCodeAt(0))];
 }
 
 // inverse of previous function
 var convertFromTuple = function(tuple, bottom_color) {
-    if(bottom_color == 'black')
-	return String.fromCharCode('A'.charCodeAt(0) + (7 - tuple[0]), '1'.charCodeAt(0) + tuple[1]);
-    else
-	return String.fromCharCode('A'.charCodeAt(0) + tuple[0], '1'.charCodeAt(0) + (7 - tuple[1]));
+	if(bottom_color == 'black')
+		return String.fromCharCode('A'.charCodeAt(0) + (7 - tuple[0]), '1'.charCodeAt(0) + tuple[1]);
+	else
+		return String.fromCharCode('A'.charCodeAt(0) + tuple[0], '1'.charCodeAt(0) + (7 - tuple[1]));
 }
 // piece starting locations
 var starting_places = {
