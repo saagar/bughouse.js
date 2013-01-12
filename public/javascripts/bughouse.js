@@ -1,37 +1,36 @@
+SQUARE_SIZE = 75;
+PIECE_SIZE = 60;
+PIECE_OFFSET = (SQUARE_SIZE - PIECE_SIZE) / 2;
+BOARD_SIZE = 8 * SQUARE_SIZE;
+
 $(document).ready(function() {
     console.log("Bughouse starting up.");
 
     // intialize board
-    var square_size = 75;
-    var piece_size = 60;
-    var piece_offset = (square_size - piece_size) / 2.0;
-    var board_size = square_size * 8;
-    var paper = Raphael("board_container", square_size * 8, square_size * 8);
-    var circle = paper.circle(50, 40, 10);
+    var paper = Raphael("board_container", BOARD_SIZE, BOARD_SIZE);
     
     var bottom_color = 'white';
 
     var placePiece = function(name, place) {
         var i, j;
-        i = place.charCodeAt(0) - 65;
-        j = place.charCodeAt(1) - 49;
-        if(bottom_color == 'white') j = 7 - j; // flip board if necessary
-        return paper.image('/images/pieces/' + name + '.svg', square_size * i + piece_offset, square_size * j + piece_offset, piece_size, piece_size);
+        i = place.charCodeAt(0) - 'A'.charCodeAt(0);
+        j = place.charCodeAt(1) - '1'.charCodeAt(0);
+        if (bottom_color == 'white')
+                j = 7 - j; // flip board if necessary
+        return paper.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
     }
-
 
     // intialize board rectangles
     var board_squares = {};
     var i, j;
-    for( i = 0 ; i < 8 ; i++ ) {
+    for (i = 0; i < 8; i++) {
         board_squares[i] = {};
-        for ( j = 0 ; j < 8 ; j++ ) {   
+        for (j = 0; j < 8; j++) {
             var fill_color = ((i + j) % 2 == 0) ? "#f0d9b5" : "#b58863"; // light brown : dark brown
-            board_squares[i][j] = paper.rect(i * square_size, j * square_size, square_size, square_size).attr({'stroke-width': 0, 'fill': fill_color});
+            board_squares[i][j] = paper.rect(i * SQUARE_SIZE, j * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': fill_color});
         }
     }
 
-    
     // piece drag actions
     var start = function () {    
         this.ox = this.attr("x");         
@@ -41,25 +40,22 @@ $(document).ready(function() {
     move = function (dx, dy) {
         this.attr({x: this.ox + dx, y: this.oy + dy});     
     },
-    up = function (event) {
+    up = function () {
         this.animate({r: 50, opacity: 1}, 500, ">");
 
         // get square center of piece is in
-        var i = Math.floor(event.layerX / square_size),
-            j = Math.floor(event.layerY / square_size);
+        var i = Math.floor((this.attr("x") + PIECE_SIZE / 2) / SQUARE_SIZE),
+        j = Math.floor((this.attr("y") + PIECE_SIZE / 2) / SQUARE_SIZE);
 
         // snap piece to center of square
-        console.log(event);
-        this.attr("x", square_size * i + piece_offset);
-        this.attr("y", square_size * j + piece_offset);
+        this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
+        this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET);
     };
 
-    for(var place in starting_places) {
+    for (var place in starting_places) {
         var piece = placePiece(starting_places[place], place);
         piece.drag(move, start, up);
     }
-
-
 });
 
 // piece starting locations
