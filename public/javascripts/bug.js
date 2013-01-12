@@ -12,7 +12,7 @@ LobbyView = Backbone.View.extend({
 
 	window.socket.on('game_list', function(data) {
 	    console.log(data);
-	    var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">game #<%=id%>feesix, m, neal_wu, rayman</a></li><% } %>', {games: data});
+	    var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">Game #<%=id%></a></li><% } %>', {games: data});
 	    $('.game-list').html(template);
 
 	});
@@ -22,6 +22,8 @@ LobbyView = Backbone.View.extend({
 	    event.preventDefault();
 	    window.socket.emit('request_room');
 	});
+
+	window.socket.emit('join_lobby');
 	return this;
     },
     remove: function() {
@@ -274,85 +276,89 @@ GameView = Backbone.View.extend({
         });
     },
     render: function() {
-	var template = _.template($("#template_game").html(), {});
+		var template = _.template($("#template_game").html(), {});
 
-	this.$el.html(template);
-	this.boards = {};
-	this.bottom_color = {};
+		this.$el.html(template);
+		this.boards = {};
+		this.bottom_color = {};
 
-	//TODO: should switch based on which board user is playing on...
-	this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
-	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
-	this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
-	this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
-	this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
-	this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
-	this.boards[0].number = 0; this.boards[1].number = 1;
+		//TODO: should switch based on which board user is playing on...
+		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
+	    this.boards[0].pieces = emptyBoard(); this.boards[1].pieces = emptyBoard();
+	    this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
+	    this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
+	    this.boards[0].number = 0; this.boards[1].number = 1;
 
-	
+		
 
-	window.socket.on('make_move', function(data) {
-	    
-	    movePiece(window.router.currentView.boards[data.board], data.from, data.to, data.name);
-	});
+	    window.socket.on('make_move', function(data) {
+	        
+	        movePiece(window.router.currentView.boards[data.board], data.from, data.to, data.name);
+	    });
 
-	window.socket.on('send_state', function(data) {
-	    console.log('state received');
-	    console.log(data);
-	    window.router.currentView.boards[0].state = data.state[0];
-	    window.router.currentView.boards[1].state = data.state[1];
+	    window.socket.on('send_state', function(data) {
+	    	console.log('state received');
+	    	console.log(data);
+	    	window.router.currentView.boards[0].state = data.state[0];
+	    	window.router.currentView.boards[1].state = data.state[1];
 
-	    setupBoard(window.router.currentView.boards[0], 'white');
-	    setupBoard(window.router.currentView.boards[1], 'black');
-	});
+	    	setupBoard(window.router.currentView.boards[0], 'white');
+			setupBoard(window.router.currentView.boards[1], 'black');
+	    });
 
-	window.socket.on('bad_move', function(data) {
-	    console.log('bad move');
-	    console.log(data);
+	    window.socket.on('bad_move', function(data) {
+	    	console.log('bad move');
+	    	console.log(data);
 
-	    // reset the fucking board
-	    for(place in window.router.currentView.boards[0].state) {
-	    	if(data[0][place] == "") {
-	    	    if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    		console.log(place);
-	    		console.log(window.router.currentView.boards[0].pieces[place]);
-	    		window.router.currentView.boards[0].pieces[place].remove();
-	    		window.router.currentView.boards[0].pieces[place] = "";
-	    	    }
-	    	} else {
-	    	    var cp = window.router.currentView.boards[0].pieces[place];
-	    	    if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    		cp.remove();
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    } else {
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    }
-	    	}
-	    }
-	});
+	    	// reset the fucking board
+	    	for(var k=0;k<=1;k++){
+		    	for(place in window.router.currentView.boards[k].state) {
+		    		if(data[k][place] == "") {
+		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
+		    				console.log(place);
+		    				console.log(window.router.currentView.boards[k].pieces[place]);
+		    				window.router.currentView.boards[k].pieces[place].remove();
+		    				window.router.currentView.boards[k].pieces[place] = "";
+		    			}
+		    		} else {
+		    			var cp = window.router.currentView.boards[k].pieces[place];
+		    			if( (cp != "" && cp != undefined) && cp.name != data[k][place]) {
+		    				cp.remove();
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			} else {
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			}
+		    		}
+		    	}
+		    }
+	    });
 
-	window.socket.on('good_move', function(data) {
-	    console.log('good_move');
-	    // reset the fucking board
-	    for(place in window.router.currentView.boards[0].state) {
-	    	if(data[0][place] == "") {
-	    	    if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
-	    		console.log(place);
-	    		console.log(window.router.currentView.boards[0].pieces[place]);
-	    		window.router.currentView.boards[0].pieces[place].remove();
-	    		window.router.currentView.boards[0].pieces[place] = "";
-	    	    }
-	    	} else {
-	    	    var cp = window.router.currentView.boards[0].pieces[place];
-	    	    if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
-	    		cp.remove();
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    } else {
-	    		placePiece(window.router.currentView.boards[0], data[0][place], place);
-	    	    }
-	    	}
-	    }
-	});
+	    window.socket.on('good_move', function(data) {
+	    	console.log('good_move');
+	    	// reset the fucking board
+	    	for(var k=0;k<=1;k++){
+		    	for(place in window.router.currentView.boards[k].state) {
+		    		if(data[k][place] == "") {
+		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
+		    				console.log(place);
+		    				console.log(window.router.currentView.boards[k].pieces[place]);
+		    				window.router.currentView.boards[k].pieces[place].remove();
+		    				window.router.currentView.boards[k].pieces[place] = "";
+		    			}
+		    		} else {
+		    			var cp = window.router.currentView.boards[k].pieces[place];
+		    			if( (cp != "" && cp != undefined) && cp.name != data[k][place]) {
+		    				cp.remove();
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			} else {
+		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
+		    			}
+		    		}
+		    	}
+		    }
+	    });
 
 	return this;
     },
@@ -394,7 +400,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://nealwu.com:8001');
+    window.socket = io.connect('http://mcamac.com:8001');
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
