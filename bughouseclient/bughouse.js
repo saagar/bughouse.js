@@ -213,11 +213,13 @@ exports.bughouse = function()
   // data: "0w:queen_b4"
   this.move = function(data)
   {
+    var legal = false;
     // get the board
     var moveBoardNum = parseInt(data.charAt(0));
     // get the color on the board
     var moveColor = data.charAt(1) == 'w' ? 0 : 1;
-    if (data.charAt(2) == ":") {
+    console.log(data.charAt(2));
+    if (data.charAt(2) === ':') {
       var toLoc = data.split('_')[1];
       piece = data.split(':')[1].split('_')[0];
       boardPiece = this.getPieceData(moveBoardNum, toLoc);
@@ -231,27 +233,25 @@ exports.bughouse = function()
       var fromLoc = data.substring(3, 5);
       var toLoc = data.substring(6);
       var piece = this.getPieceData(moveBoardNum, fromLoc)[1];
-      var legal = false;
+      console.log(boardPlayerTuple + " " + fromLoc + " " + toLoc + " " + piece);
       // There is no piece
       if (piece != "") {
         //first check if the current situation before moving is check
-        if (this.isInCheck(moveBoardNum)) {
-          //if current situation is not check, check if move is legal
-          if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
-            var moveBoard = this.copyBoard(boards[moveBoardNum]);
-            // We are capturing
-            if (moveBoard[toLoc] != "") {
-              var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
-              reserve[boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
-            }
-            moveBoard[toLoc] = moveBoard[fromLoc];
-            moveBoard[fromLoc] = "";
-            if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
-              legal = true;
-              // change it on the actual board
-              boards[moveBoardNum] = moveBoard;
-              boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
-            }
+
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
+          var moveBoard = this.copyBoard(boards[moveBoardNum]);
+          // We are capturing
+          if (moveBoard[toLoc] != "") {
+            var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
+            reserve[boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
+          }
+          moveBoard[toLoc] = moveBoard[fromLoc];
+          moveBoard[fromLoc] = "";
+          if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
+            legal = true;
+            // change it on the actual board
+            boards[moveBoardNum] = moveBoard;
+            boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
           }
         }
       }
@@ -823,7 +823,7 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.move("0w_E1-E2"));
+console.log(b.move("0w_D1-E2"));
 //console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));

@@ -154,12 +154,20 @@ io.sockets.on('connection', function(socket) {
         //console.log(games[room].pieces[data.board]);
         // update room state
         data.name = games[room].pieces[data.board][data.from];
-
         var move = '';
-        move += data.board;
-        move += games[room].bughouse.getPieceData(data.board, data.from)[0] == 0 ? 'w' : 'b';
-        move += "_";
-        move += data.from + "-" + data.to;
+        if(data.from != 'bank') {
+            move += data.board;
+            move += games[room].bughouse.getPieceData(data.board, data.from)[0] == 0 ? 'w' : 'b';
+            move += "_";
+            move += data.from + "-" + data.to;
+        } else {
+            move += data.board;
+            move += data.piece[0];
+            move += ":";
+            move += data.piece.split(' ')[1];
+            move += '_';
+            move += data.to;
+        }
         console.log(move);
         
         var move_data = games[room].bughouse.move(move);
