@@ -54,7 +54,7 @@ exports.bughouse = function()
       "C4": "",
       "D4": "",
       "E4": "",
-      "F4": "white rook",
+      "F4": "white knight",
       "G4": "",
       "H4": "",
       "A5": "",
@@ -278,8 +278,7 @@ exports.bughouse = function()
     switch(piece)
     {
       case "knight":
-        return [];
-        // return this.checkKnightMoves(boardnum, location, player);
+        return this.checkKnightMoves(boardnum, location, player);
       case "pawn":
         return [];
         // return this.checkPawnMoves(boardnum, location, player);

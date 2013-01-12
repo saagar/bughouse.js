@@ -42,12 +42,21 @@ function placePiece(board, name, place, bottom_color) {
     var i, j;
     i = place.charCodeAt(0) - 'A'.charCodeAt(0);
     j = 7 - (place.charCodeAt(1) - '1'.charCodeAt(0));
-    if (bottom_color == 'black') {
+
+    //remove current piece
+    if(board.pieces[place] != '' && board.pieces[place] != undefined) {
+    	board.pieces[place].remove();
+    }
+    if (board.bottom_color == 'black') {
         // flip board if necessary
         i = 7 - i; j = 7 - j;
     }
     var piece = board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
     piece.name = name;
+    piece.position = convertToTuple(place, board.bottom_color);
+    piece.drag(move, start, up);
+    board.pieces[place] = piece;
+
     return piece;
 }
 
@@ -66,15 +75,16 @@ function getPieceAt(board, i, j) {
 }
 
 function movePiece(board, from, to, name) {
+
 	var op = convertToTuple(from, board.bottom_color),
 	    p = convertToTuple(to, board.bottom_color);
 	var oi = op[0], oj = op[1], i = p[0], j = p[1];
 	console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
     var piece = board.pieces[from];
-    if (piece != null) {
+    if (piece != "") {
         var new_piece = board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
         new_piece.name = name;
-        new_piece.drag(move, start, up);
+        
         new_piece.position = convertToTuple(to, board.bottom_color);
         board.pieces[to] = new_piece;
         piece.remove();
@@ -88,7 +98,7 @@ function movePiece(board, from, to, name) {
 function sendMove(board, oi, oj, i, j) {
 	var op = convertFromTuple([oi, oj], board.bottom_color),
 		p =  convertFromTuple([i, j], board.bottom_color);
-    console.log('Sending move from ' + op + ' to ' + p + ' on board ' + board.number);
+    console.log('Attempting move from ' + op + ' to ' + p + ' on board ' + board.number);
     window.socket.emit('send_move', {'from': op, 'to': p, 'board': board.number});
 }
 
@@ -123,6 +133,11 @@ up = function(event) {
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
         // console.log(this.position[0] + ' ' + this.position[1]);
+
+        // update in pieces array;
+        this.paper.pieces[convertFromTuple([this.position[0], this.position[1]], this.paper.bottom_color)] = "";
+        this.paper.pieces[convertFromTuple([i,j], this.paper.bottom_color)] = this;
+
         sendMove(this.paper, this.position[0], this.position[1], i, j);
     } else {
         // otherwise return to original position
@@ -211,12 +226,13 @@ var setupBoard = function(board, bottom_color) {
 	// console.log(board.state);
 	// TODO: update with game state, right now just placing default board
     for (var place in board.state) {
+    	// clear squares which should be empty
     	if(board.state[place] != '') {
 	        var piece = placePiece(board, board.state[place], place, bottom_color);
 	        piece.position = convertToTuple(place, board.bottom_color);
 	 		// console.log(board.state[place] + " " + JSON.stringify(piece.position));
 	        board.pieces[place] = piece;
-	        piece.drag(move, start, up);
+	        
 	    }
     }
 
@@ -282,6 +298,53 @@ GameView = Backbone.View.extend({
 
 	    	setupBoard(window.router.currentView.boards[0], 'white');
 			setupBoard(window.router.currentView.boards[1], 'black');
+	    });
+
+	    window.socket.on('bad_move', function(data) {
+	    	console.log('bad move');
+	    	console.log(data);
+
+	    	// reset the fucking board
+	    	for(place in window.router.currentView.boards[0].state) {
+	    		if(data[0][place] == "") {
+	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
+	    				console.log(place);
+	    				console.log(window.router.currentView.boards[0].pieces[place]);
+	    				window.router.currentView.boards[0].pieces[place].remove();
+	    				window.router.currentView.boards[0].pieces[place] = "";
+	    			}
+	    		} else {
+	    			var cp = window.router.currentView.boards[0].pieces[place];
+	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
+	    				cp.remove();
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			} else {
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			}
+	    		}
+	    	}
+	    });
+
+	    window.socket.on('good_move', function(data) {
+	    	// reset the fucking board
+	    	for(place in window.router.currentView.boards[0].state) {
+	    		if(data[0][place] == "") {
+	    			if(window.router.currentView.boards[0].pieces[place] != undefined && window.router.currentView.boards[0].pieces[place] != "") {
+	    				console.log(place);
+	    				console.log(window.router.currentView.boards[0].pieces[place]);
+	    				window.router.currentView.boards[0].pieces[place].remove();
+	    				window.router.currentView.boards[0].pieces[place] = "";
+	    			}
+	    		} else {
+	    			var cp = window.router.currentView.boards[0].pieces[place];
+	    			if( (cp != "" && cp != undefined) && cp.name != data[0][place]) {
+	    				cp.remove();
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			} else {
+	    				placePiece(window.router.currentView.boards[0], data[0][place], place);
+	    			}
+	    		}
+	    	}
 	    });
 
 		return this;

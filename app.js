@@ -156,22 +156,30 @@ io.sockets.on('connection', function(socket) {
         move += "_";
         move += data.from + "-" + data.to;
         console.log(move);
-        console.log(games[room].bughouse.move(move));
+        
+        var move_data = games[room].bughouse.move(move);
 
-        if(data.name.slice(0, 5) == games[room].turns[data.board]) {
-
-            if(games[room].pieces[data.board][data.from] != '') {
-                console.log('Updating state');
-                games[room].pieces[data.board][data.to] = games[room].pieces[data.board][data.from];
-                console.log(games[room].pieces[data.board][data.from]);
-                games[room].pieces[data.board][data.from] = '';
-                data.name = games[room].pieces[data.board][data.to];
-            }
-
-            console.log('Making move ' + JSON.stringify(data) + ' in game ' + room + ' on board ' + data.board);
-            
-            io.sockets.in(room).emit('make_move', data);
+        if(move_data.wasLegal) {
+            // have to make the move
+            io.sockets.in(room).emit('good_move', move_data);
+        } else {
+            socket.emit('bad_move', move_data);
         }
+
+        // if(data.name.slice(0, 5) == games[room].turns[data.board]) {
+
+        //     if(games[room].pieces[data.board][data.from] != '') {
+        //         console.log('Updating state');
+        //         games[room].pieces[data.board][data.to] = games[room].pieces[data.board][data.from];
+        //         console.log(games[room].pieces[data.board][data.from]);
+        //         games[room].pieces[data.board][data.from] = '';
+        //         data.name = games[room].pieces[data.board][data.to];
+        //     }
+
+        //     console.log('Making move ' + JSON.stringify(data) + ' in game ' + room + ' on board ' + data.board);
+            
+        //     io.sockets.in(room).emit('make_move', data);
+        // }
     });
 
     socket.on('disconnect', function() {
