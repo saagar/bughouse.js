@@ -8,7 +8,6 @@ $(document).ready(function() {
 
     // intialize board
     var paper = Raphael("board_container", BOARD_SIZE, BOARD_SIZE);
-    
     var bottom_color = 'white';
 
     var placePiece = function(name, place) {
