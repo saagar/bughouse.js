@@ -54,7 +54,7 @@ function placePiece(board, name, place, bottom_color) {
         // flip board if necessary
         i = 7 - i; j = 7 - j;
     }
-    console.log(name);
+    //console.log(name);
     var piece = board.piece_cache[name].clone().attr({x: (SQUARE_SIZE * i + PIECE_OFFSET), y: (SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET)});
     piece.name = name;
     piece.position = convertToTuple(place, board.bottom_color);
@@ -191,9 +191,7 @@ var bankUp = function(event) {
 
 
         var place = convertFromTuple([i, j], this.paper.bottom_color);
-        var piece = placePiece(this.paper, this.name, place, this.paper.bottom_color);
-        this.paper.pieces[place] = piece;
-        
+
          window.socket.emit('send_move', {'from': 'bank', 
         	'to': place, 'piece': this.name, 'board': this.paper.number});
     } else {
