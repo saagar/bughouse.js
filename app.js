@@ -33,6 +33,10 @@ app.get('/', function(req, res){
   res.render('index', { title: 'Express' });
 });
 
+app.get('/lobby', function(req, res){
+  res.render('lobby', { title: 'Express' });
+});
+
 app.get('/users', user.list);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
