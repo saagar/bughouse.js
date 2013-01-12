@@ -12,7 +12,7 @@ function bughouse()
   // private constructor 
   __construct = function() 
   {
-    alert("new bughouse game created.");
+    console.log("new bughouse game created.");
     //set board0 and board1 to default start
     board0 = {
       "A1": "white rook",
