@@ -39,6 +39,7 @@ BOARD_SIZE = 8 * SQUARE_SIZE;
 BANK_OFFSET = PIECE_SIZE + 10;
 TEXT_OFFSET = (BOARD_SIZE - PIECE_SIZE * 5 - 10) / 5;
 
+window.piece_cache = {};
 
 function placePiece(board, name, place, bottom_color) {
     var i, j;
@@ -53,7 +54,8 @@ function placePiece(board, name, place, bottom_color) {
         // flip board if necessary
         i = 7 - i; j = 7 - j;
     }
-    var piece = board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    console.log(name);
+    var piece = board.piece_cache[name].clone().attr({x: (SQUARE_SIZE * i + PIECE_OFFSET), y: (SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET)});
     piece.name = name;
     piece.position = convertToTuple(place, board.bottom_color);
     piece.drag(move, start, up);
@@ -84,6 +86,7 @@ function movePiece(board, from, to, name) {
     console.log('Making move from ' + oi + ', ' + oj + ' to ' + i + ', ' + j + ' ' + name);
     var piece = board.pieces[from];
     if (piece != "") {
+
         var new_piece = board.image('/images/pieces/' + name + '.svg',  SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
         new_piece.name = name;
         
@@ -185,12 +188,14 @@ var bankUp = function(event) {
         this.undrag();
         this.drag(move, start, up);
         //var loc = String.fromCharCode('A'.fromCharCode(0));
-        sendMove(this.paper, oi, oj, i, j);
+
 
         var place = convertFromTuple([i, j], this.paper.bottom_color);
-        var piece = placePiece(this.paper, this.paper.state[place], place, this.paper.bottom_color);
-        piece.position = [i, j];
+        var piece = placePiece(this.paper, this.name, place, this.paper.bottom_color);
         this.paper.pieces[place] = piece;
+        
+         window.socket.emit('send_move', {'from': 'bank', 
+        	'to': place, 'piece': this.name, 'board': this.paper.number});
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -292,6 +297,14 @@ GameView = Backbone.View.extend({
 	    this.boards[0].number = 0; this.boards[1].number = 1;
 
 		
+		this.boards[0].piece_cache = {}; this.boards[1].piece_cache = {};
+		var pt = ['pawn', 'king', 'queen', 'knight', 'bishop', 'rook'];
+		for(var k=0;k<6;k++) {
+			for(var b=0;b<=1;b++) {
+				this.boards[b].piece_cache['white ' + pt[k]] = this.boards[b].image('/images/pieces/white ' + pt[k] + '.svg',  -500, -500, PIECE_SIZE, PIECE_SIZE);
+				this.boards[b].piece_cache['black ' + pt[k]] = this.boards[b].image('/images/pieces/black ' + pt[k] + '.svg',  -500, -500, PIECE_SIZE, PIECE_SIZE);
+			}
+		}
 
 	    window.socket.on('make_move', function(data) {
 	        
@@ -400,7 +413,7 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://mcamac.com:8001');
+    window.socket = io.connect('http://localhost:8001');
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
