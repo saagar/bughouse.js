@@ -200,7 +200,7 @@ exports.bughouse = function()
       piece = data.split(':')[1].split('_')[0];
       boardPiece = this.getPieceData(moveBoardNum, toLoc);
       if (boardPiece[1] == "") {
-        boards[moveBoardNum][toLoc] = piece;
+        boards[moveBoardNum][toLoc] = (moveColor == 0 ? 'white ' : 'black ') + piece;
         legal = true;
         boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
       }
