@@ -227,20 +227,34 @@ function bughouse()
       var tempPiece = getPieceData(boardnum, e)
       if (tempPiece[0] == player)
       { //boardnumber, type of piece, piece's location, player owning the piece
-        getSinglePieceAttackSquares(boardnum, tempPiece[1], e)
+        getSinglePieceAttackSquares(boardnum, tempPiece[1], e, tempPiece[0])
       }
-
       //alert(e); //e is going to be the key, that is, for example, "A1"
-
     }
-
-
   }
 
   // example: 0, "knight", "A1", 1
   this.getSinglePieceAttackSquares(boardnum, piece, location, player)
   {
+    switch(piece)
+    {
+      case "knight":
+        return checkKnightMoves(boardnum, piece, location, player);
+      case "pawn":
+        return checkPawnMoves(boardnum, piece, location, player);
+      case "king":
+        return checkKingMoves(boardnum, piece, location, player);
+      case "queen":
+        // this case can use bishop and rook checks
+        var mvs = checkDiagonalMoves(boardnum, piece, location, player);
+        mvs.push(checkHVMoves(boardnum, piece, location, player));
+        return mvs;
+      case "bishop":
+        return checkDiagonalMoves(boardnum, piece, location, player);
+      case "rook":
+        return checkHVMoves(boardnum, piece, location, player);
 
+    }
 
   }
 
