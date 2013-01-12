@@ -133,11 +133,16 @@ io.sockets.on('connection', function(socket) {
     });
 
     var leaveRoom = function(roomName) {
+        if(roomName[games] == undefined) return;
         console.log(games[roomName].players);
         delete games[roomName].players[playerId];
         console.log(games[roomName].players);
         socket.leave(roomName);
     }
+
+    socket.on('join_lobby', function(data) {
+        sendGames();
+    })
 
     socket.on('leave_room', function(data) {
         leaveRoom(data.room);

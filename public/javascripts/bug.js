@@ -12,7 +12,7 @@ LobbyView = Backbone.View.extend({
 
 	window.socket.on('game_list', function(data) {
 	    console.log(data);
-	    var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">game #<%=id%>feesix, m, neal_wu, rayman</a></li><% } %>', {games: data});
+	    var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">Game #<%=id%></a></li><% } %>', {games: data});
 	    $('.game-list').html(template);
 
 	});
@@ -22,6 +22,8 @@ LobbyView = Backbone.View.extend({
 	    event.preventDefault();
 	    window.socket.emit('request_room');
 	});
+
+	window.socket.emit('join_lobby');
 	return this;
     },
     remove: function() {
