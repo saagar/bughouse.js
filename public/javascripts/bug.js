@@ -155,16 +155,16 @@ var bankStart = function(event) {
 };
 
 var bankMove = function(dx, dy) {
-	this.dragged = 1;
+    this.dragged = 1;
     var nowX, nowY;
     nowX = Math.max(0, this.ox + dx);
     nowY = Math.max(0, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
     nowY = Math.min(BOARD_SIZE + 2 * BANK_OFFSET - PIECE_SIZE, nowY); 
     this.attr({x: nowX, y: nowY});
-},
+};
 
-bankUp = function(event) {
+var bankUp = function(event) {
     this.animate({r: 50, opacity: 1}, 500, ">");
 
     // get square center of piece is in
@@ -184,6 +184,11 @@ bankUp = function(event) {
         this.drag(move, start, up);
         //var loc = String.fromCharCode('A'.fromCharCode(0));
         sendMove(this.paper, oi, oj, i, j);
+
+        var place = convertFromTuple([i, j], this.paper.bottom_color);
+        var piece = placePiece(this.paper, this.paper.state[place], place, this.paper.bottom_color);
+        piece.position = [i, j];
+        this.paper.pieces[place] = piece;
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -221,7 +226,8 @@ var setupBoard = function(board, bottom_color) {
 
     	bank_piece2.drag(bankMove, bankStart, bankUp);
     	bank_piece2.name = bottom_color + ' ' + types[i];
-	}
+    }
+
 	// console.log('board state');
 	// console.log(board.state);
 	// TODO: update with game state, right now just placing default board
@@ -388,14 +394,10 @@ AppRouter = Backbone.Router.extend({
 
 $(document).ready(function() {
     console.log('Making the socket');
-    window.socket = io.connect('http://localhost:8001');
-
+    window.socket = io.connect('http://nealwu.com:8001');
     window.router = new AppRouter($('#content'));
 
     Backbone.history.start();
-
-    
-
 });
 
 // converts a space name like "A1" into an (i,j) tuple like (0,0)
