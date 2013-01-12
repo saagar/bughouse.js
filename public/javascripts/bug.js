@@ -35,11 +35,15 @@ var placePiece = function(board, name, place, bottom_color) {
 var start = function(event) {
     this.ox = this.attr("x");
     this.oy = this.attr("y");
-    console.log(this.ox + " " + this.oy);
     this.animate({r: 70, opacity: 1}, 500, ">");
 },
 move = function(dx, dy) {
-    this.attr({x: this.ox + dx, y: this.oy + dy});
+	var nowX, nowY;
+	nowX = Math.max(0, this.ox + dx);
+    nowY = Math.max(0, this.oy + dy);
+    nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
+    nowY = Math.min(BOARD_SIZE - PIECE_SIZE, nowY); 
+    this.attr({x: nowX, y: nowY});
 },
 up = function(event) {
     this.animate({r: 50, opacity: 1}, 500, ">");
@@ -48,16 +52,12 @@ up = function(event) {
     var i = Math.floor(event.layerX / SQUARE_SIZE),
         j = Math.floor(event.layerY / SQUARE_SIZE);
 
-    console.log(i + " " + j);
-    console.log(event.screenX + " " + event.screenY);
-
     if(0 <= i && i < 8 && 0 <= j && j < 8) {
         // if valid square, snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
         this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET);
     } else {
         // otherwise return to original position
-        console.log(this.ox + " " + this.oy);
         this.attr("x", this.ox);
         this.attr("y", this.oy);
     }
