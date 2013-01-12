@@ -15,10 +15,13 @@ LobbyView = Backbone.View.extend({
 });
 
 
-SQUARE_SIZE = 60;
+SQUARE_SIZE = 50;
 PIECE_SIZE = SQUARE_SIZE - 5;
 PIECE_OFFSET = (SQUARE_SIZE - PIECE_SIZE) / 2;
 BOARD_SIZE = 8 * SQUARE_SIZE;
+BANK_OFFSET = PIECE_SIZE + 10;
+TEXT_OFFSET = (BOARD_SIZE - PIECE_SIZE * 5 - 10) / 5;
+
 
 function placePiece(board, name, place, bottom_color) {
     var i, j;
@@ -28,7 +31,9 @@ function placePiece(board, name, place, bottom_color) {
         // flip board if necessary
         i = 7 - i; j = 7 - j;
     }
-    return board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    var piece = board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    piece.name = name;
+    return piece;
 }
 
 function getPieceAt(board, i, j) {
@@ -48,7 +53,7 @@ function getPieceAt(board, i, j) {
 function movePiece(board, oi, oj, i, j) {
     var piece = getPieceAt(board, oi, oj);
     piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
-    piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET);
+    piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET + BANK_OFFSET);
 }
 
 // piece drag actions
@@ -60,9 +65,9 @@ var start = function(event) {
 move = function(dx, dy) {
     var nowX, nowY;
     nowX = Math.max(0, this.ox + dx);
-    nowY = Math.max(0, this.oy + dy);
+    nowY = Math.max(BANK_OFFSET, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
-    nowY = Math.min(BOARD_SIZE - PIECE_SIZE, nowY); 
+    nowY = Math.min(BOARD_SIZE + BANK_OFFSET - PIECE_SIZE, nowY); 
     this.attr({x: nowX, y: nowY});
 },
 up = function(event) {
@@ -70,16 +75,63 @@ up = function(event) {
 
     // get square center of piece is in
     var i = Math.floor(event.layerX / SQUARE_SIZE),
-        j = Math.floor(event.layerY / SQUARE_SIZE);
+        j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
 
     if(0 <= i && i < 8 && 0 <= j && j < 8) {
         // if valid square, snap piece to center of square
         this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
-        this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET);
+        this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET);
 
         // Get the original position
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
+        console.log(this.name + " moved");
+    } else {
+        // otherwise return to original position
+        this.attr("x", this.ox);
+        this.attr("y", this.oy);
+    }
+};
+
+var bankStart = function(event) {
+	var new_bank_piece = this.clone().drag(bankMove, bankStart, bankUp);
+	new_bank_piece.name = this.name;
+    this.ox = this.attr("x");
+    this.oy = this.attr("y");
+    this.animate({r: 70, opacity: 1}, 500, ">");
+};
+
+var bankMove = function(dx, dy) {
+	this.dragged = 1;
+    var nowX, nowY;
+    nowX = Math.max(0, this.ox + dx);
+    nowY = Math.max(0, this.oy + dy);
+    nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
+    nowY = Math.min(BOARD_SIZE + 2 * BANK_OFFSET - PIECE_SIZE, nowY); 
+    this.attr({x: nowX, y: nowY});
+},
+
+bankUp = function(event) {
+    this.animate({r: 50, opacity: 1}, 500, ">");
+
+    // get square center of piece is in
+    var i = Math.floor(event.layerX / SQUARE_SIZE),
+        j = Math.floor((event.layerY - BANK_OFFSET) / SQUARE_SIZE);
+
+    if(0 <= i && i < 8 && 0 <= j && j < 8) {
+        // if valid square, snap piece to center of square
+        this.attr("x", SQUARE_SIZE * i + PIECE_OFFSET);
+        this.attr("y", SQUARE_SIZE * j + PIECE_OFFSET + BANK_OFFSET);
+
+        // Get the original position
+        var oi = Math.floor(this.ox / SQUARE_SIZE);
+        var oj = Math.floor(this.oy / SQUARE_SIZE);
+        //this.remove();
+        this.undrag();
+        this.drag(move, start, up);
+        //var loc = String.fromCharCode('A'.fromCharCode(0));
+
+       
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -95,9 +147,29 @@ var setupBoard = function(board, bottom_color) {
         board_squares[i] = {};
         for (j = 0; j < 8; j++) {
             var fill_color = ((i + j) % 2 == 0) ? "#f0d9b5" : "#b58863"; // light brown : dark brown
-            board_squares[i][j] = board.rect(i * SQUARE_SIZE, j * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': fill_color});
+            board_squares[i][j] = board.rect(i * SQUARE_SIZE, j * SQUARE_SIZE + BANK_OFFSET, SQUARE_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': fill_color});
         }
     }
+
+    board.rect(0, 0, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
+    board.rect(0, BOARD_SIZE + SQUARE_SIZE + 10, BOARD_SIZE, SQUARE_SIZE).attr({'stroke-width': 0, 'fill': "#EEE"});
+    var types = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
+
+    for(i = 0; i < types.length; i++) {
+    	top_color = (board.bottom_color == 'white') ? 'black' : 'white';
+    	var bank_piece = board.image('/images/pieces/' + top_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+
+    	bank_piece.drag(bankMove, bankStart, bankUp);
+    	bank_piece.name = top_color + ' ' + types[i];
+    	
+    	bank_piece = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
+    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+
+    	bank_piece.drag(bankMove, bankStart, bankUp);
+    	bank_piece.name = bottom_color + ' ' + types[i];
+	}
+
 
     for (var place in starting_places) {
         var piece = placePiece(board, starting_places[place], place, bottom_color);
@@ -118,11 +190,12 @@ GameView = Backbone.View.extend({
 
 		this.boards = {};
 		this.bottom_color = {};
-		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE);
-	    	this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE);
+		this.boards[0] = Raphael("board1_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[1] = Raphael("board2_container", BOARD_SIZE, BOARD_SIZE + BANK_OFFSET * 2);
+	    this.boards[0].bottom_color = 'white'; this.boards[1].bottom_color = 'black';
 
-	    	setupBoard(this.boards[0], 'white');
-	    	setupBoard(this.boards[1], 'black');
+    	setupBoard(this.boards[0], 'white');
+    	setupBoard(this.boards[1], 'black');
 
 
 	    // join given room
