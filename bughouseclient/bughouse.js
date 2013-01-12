@@ -239,26 +239,26 @@ function bughouse()
     switch(piece)
     {
       case "knight":
-        return checkKnightMoves(boardnum, piece, location, player);
+        return checkKnightMoves(boardnum, location, player);
       case "pawn":
-        return checkPawnMoves(boardnum, piece, location, player);
+        return checkPawnMoves(boardnum, location, player);
       case "king":
-        return checkKingMoves(boardnum, piece, location, player);
+        return checkKingMoves(boardnum, location, player);
       case "queen":
         // this case can use bishop and rook checks
-        var mvs = checkDiagonalMoves(boardnum, piece, location, player);
-        mvs.push(checkHVMoves(boardnum, piece, location, player));
+        var mvs = checkDiagonalMoves(boardnum, location, player);
+        mvs.push(checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
-        return checkDiagonalMoves(boardnum, piece, location, player);
+        return checkDiagonalMoves(boardnum, location, player);
       case "rook":
-        return checkHVMoves(boardnum, piece, location, player);
+        return checkHVMoves(boardnum, location, player);
 
     }
 
   }
 
-  this.checkHVMoves(boardnum, piece, location, player){
+  this.checkHVMoves(boardnum, location, player){
     var mvs = [];
     var tuple = convertToTuple(location);
 
