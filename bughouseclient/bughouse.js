@@ -337,7 +337,7 @@ exports.bughouse = function()
       if (tuple[0]-1 > 0 && tuple[1]+1 <= 8)
       { //diag up left is in board
         diagleft = this.convertToString([tuple[0]-1, tuple[1]+1]);
-        if getPieceData(boardnum, diagleft)[1] != player{
+        if (this.getPieceData(boardnum, diagleft)[1] != player){
           //opponent piece is there
           mvs.push(diagleft);
         }
@@ -346,7 +346,7 @@ exports.bughouse = function()
       if (tuple[0]+1 <= 8 && tuple[1]+1 <= 8)
       { //diag up right is in board
         diagright = this.convertToString([tuple[0]+1, tuple[1]+1]);
-        if getPieceData(boardnum, diagright)[1] != player{
+        if (this.getPieceData(boardnum, diagright)[1] != player){
           //opponent piece is there
           mvs.push(diagright);
         }
@@ -366,7 +366,7 @@ exports.bughouse = function()
       if (tuple[0]-1 > 0 && tuple[1]-1 > 0)
       { //if going down and left is still in board
         diagleft = this.convertToString([tuple[0]-1, tuple[1]-1]);
-        if getPieceData(boardnum, diagleft)[1] != player{
+        if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagleft);
         }
       }
@@ -374,7 +374,7 @@ exports.bughouse = function()
       if (tuple[0]+1 <= 8 && tuple[1]-1 > 0)
       { //if going down and right is still in board
         diagright = this.convertToString([tuple[0]+1, tuple[1]-1]);
-        if getPieceData(boardnum, diagleft)[1] != player{
+        if (this.getPieceData(boardnum, diagleft)[1] != player){
           mvs.push(diagright);
         }
       }
