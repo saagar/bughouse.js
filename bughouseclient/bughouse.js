@@ -1,4 +1,4 @@
-function bughouse()
+exports.bughouse = function()
 {
     // private variables
     var boards;
@@ -159,10 +159,10 @@ function bughouse()
     boards = [board0, board1];
     boardturns = [0,0]; //sets it to white's turn on both boards
     reserve = {
-      "0w" : [];
-      "0b" : [];
-      "1w" : [];
-      "1b" : [];
+      "0w" : [],
+      "0b" : [],
+      "1w" : [],
+      "1b" : [],
     };
   }()
 
@@ -273,7 +273,7 @@ function bughouse()
   }
 
   // example: 0, "knight", "A1", 1
-  this.getSinglePieceAttackSquares(boardnum, piece, location, player)
+  this.getSinglePieceAttackSquares = function(boardnum, piece, location, player)
   {
     switch(piece)
     {
@@ -569,4 +569,6 @@ function bughouse()
       return [-1, ""];
     }
   }
+
+  return this;
 }

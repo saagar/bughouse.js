@@ -7,6 +7,7 @@ var express = require('express')
 , user = require('./routes/user')
 , http = require('http')
 , path = require('path')
+, bg = require('./bughouseclient/bughouse')
 , everyauth = require('everyauth');
 
 var app = express();
@@ -62,6 +63,7 @@ function emptyBoard() {
 
 var Game = function() {
     this.pieces = [emptyBoard(), emptyBoard()];
+    this.bughouse = bg.bughouse();
     this.turns = ['white', 'white'];
     this.players = {};
     this.timer = null;
@@ -104,6 +106,8 @@ io.sockets.on('connection', function(socket) {
             // create a new room
             games[data.room] = new Game();
         }
+        console.log(games[data.room]);
+        console.log(games[data.room].bughouse.getJSON());
 
         games[data.room].players[playerId] = 1;
         socket.join(data.room);
