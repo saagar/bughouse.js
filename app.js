@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -11,7 +10,7 @@ var express = require('express')
 
 var app = express();
 
-app.configure(function(){
+app.configure(function() {
   app.set('port', process.env.PORT || 8001);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
@@ -25,21 +24,21 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-app.get('/lobby', function(req, res){
+app.get('/lobby', function(req, res) {
   res.render('lobby', { title: 'Express' });
 });
 
 app.get('/users', user.list);
 
-var server = http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app).listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
 
