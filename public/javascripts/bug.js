@@ -30,10 +30,24 @@ function placePiece(board, name, place, bottom_color) {
     return board.image('/images/pieces/' + name + '.svg', SQUARE_SIZE * i + PIECE_OFFSET, SQUARE_SIZE * j + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
 }
 
-function  getPieceAt(board, i, j) {
-    var x = (i + 0.5) * SQUARE_SIZE;
-    var y = (j + 0.5) * SQUARE_SIZE;
-    return board.getElementByPoint(x, y);
+function getPieceAt(board, i, j) {
+    // Get the center of the appropriate square
+    var x = i * SQUARE_SIZE + PIECE_OFFSET;
+    var y = j * SQUARE_SIZE + PIECE_OFFSET;
+    var elements = board.getElementsByPoint(x, y);
+
+    for (i in elements) {
+        if (elements[i].type == "image")
+            return elements[i];
+    }
+
+    return null;
+}
+
+function movePiece(board, oi, oj, i, j) {
+    var piece = getPieceAt(board, oi, oj);
+    piece.attr("x", i * SQUARE_SIZE + PIECE_OFFSET);
+    piece.attr("y", j * SQUARE_SIZE + PIECE_OFFSET);
 }
 
 // piece drag actions
@@ -43,8 +57,8 @@ var start = function(event) {
     this.animate({r: 70, opacity: 1}, 500, ">");
 },
 move = function(dx, dy) {
-	var nowX, nowY;
-	nowX = Math.max(0, this.ox + dx);
+    var nowX, nowY;
+    nowX = Math.max(0, this.ox + dx);
     nowY = Math.max(0, this.oy + dy);
     nowX = Math.min(BOARD_SIZE - PIECE_SIZE, nowX);
     nowY = Math.min(BOARD_SIZE - PIECE_SIZE, nowY); 
@@ -65,10 +79,6 @@ up = function(event) {
         // Get the original position
         var oi = Math.floor(this.ox / SQUARE_SIZE);
         var oj = Math.floor(this.oy / SQUARE_SIZE);
-
-        if (oi == 0 && oj == 0) {
-            this.remove();
-        }
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
