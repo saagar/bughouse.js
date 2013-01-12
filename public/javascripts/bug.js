@@ -192,8 +192,10 @@ var bankUp = function(event) {
 
         var place = convertFromTuple([i, j], this.paper.bottom_color);
 
+
          window.socket.emit('send_move', {'from': 'bank', 
         	'to': place, 'piece': this.name, 'board': this.paper.number});
+        this.remove();
     } else {
         // otherwise return to original position
         this.attr("x", this.ox);
@@ -221,13 +223,13 @@ var setupBoard = function(board, bottom_color) {
     for(i = 0; i < types.length; i++) {
     	top_color = (board.bottom_color == 'white') ? 'black' : 'white';
     	var bank_piece = board.image('/images/pieces/' + top_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
-    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+    	board.bank_texts[top_color + ' ' + types[i]] = board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
 
     	bank_piece.drag(bankMove, bankStart, bankUp);
     	bank_piece.name = top_color + ' ' + types[i];
     	
     	var bank_piece2 = board.image('/images/pieces/' + bottom_color + ' ' + types[i] + '.svg', i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_OFFSET, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_OFFSET, PIECE_SIZE, PIECE_SIZE);
-    	board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
+    	board.bank_texts[bottom_color + ' ' + types[i]] = board.text(i * (PIECE_SIZE + TEXT_OFFSET) + PIECE_SIZE + 5, BOARD_SIZE + SQUARE_SIZE + 10 + PIECE_SIZE / 2 + 5, "x0").attr({"text-anchor":"start", "font-size":"18pt"});
 
     	bank_piece2.drag(bankMove, bankStart, bankUp);
     	bank_piece2.name = bottom_color + ' ' + types[i];
@@ -293,6 +295,7 @@ GameView = Backbone.View.extend({
 	    this.boards[0].state = emptyBoard(); this.boards[1].state = emptyBoard();
 	    this.boards[0].bank = {white: {}, black: {}}; this.boards[1].bank = {white: {}, black: {}};
 	    this.boards[0].number = 0; this.boards[1].number = 1;
+	    this.boards[0].bank_texts = {}; this.boards[1].bank_texts = {};
 
 		
 		this.boards[0].piece_cache = {}; this.boards[1].piece_cache = {};
@@ -318,11 +321,7 @@ GameView = Backbone.View.extend({
 	    	setupBoard(window.router.currentView.boards[0], 'white');
 			setupBoard(window.router.currentView.boards[1], 'black');
 	    });
-
-	    window.socket.on('bad_move', function(data) {
-	    	console.log('bad move');
-	    	console.log(data);
-
+	    var fuckingReset = function(data) {
 	    	// reset the fucking board
 	    	for(var k=0;k<=1;k++){
 		    	for(place in window.router.currentView.boards[k].state) {
@@ -344,31 +343,19 @@ GameView = Backbone.View.extend({
 		    		}
 		    	}
 		    }
+	    }
+
+	    window.socket.on('bad_move', function(data) {
+	    	console.log('bad move');
+	    	console.log(data);
+	    	fuckingReset(data);
+	    	
 	    });
 
 	    window.socket.on('good_move', function(data) {
 	    	console.log('good_move');
 	    	// reset the fucking board
-	    	for(var k=0;k<=1;k++){
-		    	for(place in window.router.currentView.boards[k].state) {
-		    		if(data[k][place] == "") {
-		    			if(window.router.currentView.boards[k].pieces[place] != undefined && window.router.currentView.boards[k].pieces[place] != "") {
-		    				console.log(place);
-		    				console.log(window.router.currentView.boards[k].pieces[place]);
-		    				window.router.currentView.boards[k].pieces[place].remove();
-		    				window.router.currentView.boards[k].pieces[place] = "";
-		    			}
-		    		} else {
-		    			var cp = window.router.currentView.boards[k].pieces[place];
-		    			if( (cp != "" && cp != undefined) && cp.name != data[k][place]) {
-		    				cp.remove();
-		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
-		    			} else {
-		    				placePiece(window.router.currentView.boards[k], data[k][place], place);
-		    			}
-		    		}
-		    	}
-		    }
+	    	fuckingReset(data);
 	    });
 
 	return this;
