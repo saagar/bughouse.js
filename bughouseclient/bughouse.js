@@ -53,7 +53,7 @@ exports.bughouse = function()
       "B4": "",
       "C4": "",
       "D4": "",
-      "E4": "",
+      "E4": "white knight",
       "F4": "white rook",
       "G4": "",
       "H4": "",
@@ -647,3 +647,4 @@ exports.bughouse = function()
 
 var b = new exports.bughouse();
 console.log(b.checkHVMoves(0, "F4", 0));
+console.log(b.checkKnightMoves(0, "E4", 0));
