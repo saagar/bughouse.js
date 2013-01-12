@@ -278,15 +278,12 @@ exports.bughouse = function()
     switch(piece)
     {
       case "knight":
-        return [];
-        // return this.checkKnightMoves(boardnum, location, player);
+        return this.checkKnightMoves(boardnum, location, player);
       case "pawn":
-        return [];
-        // return this.checkPawnMoves(boardnum, location, player);
+        return this.checkPawnMoves(boardnum, location, player);
       case "king":
-        return [];
-        //return this.checkKingMoves(boardnum, location, player);
-      case "queen": {}
+        return this.checkKingMoves(boardnum, location, player);
+      case "queen":
         // this case can use bishop and rook checks
         var mvs = this.checkDiagonalMoves(boardnum, location, player);
         mvs.push(this.checkHVMoves(boardnum, location, player));
@@ -655,6 +652,8 @@ exports.bughouse = function()
 }
 
 var b = new exports.bughouse();
-console.log(b.checkHVMoves(0, "F4", 0));
-console.log(b.checkDiagonalMoves(0, "G4", 0));
-console.log(b.checkKnightMoves(0, "E4", 0));
+console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
+console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
+console.log(b.getSinglePieceAttackSquares(0, "knight","E4", 0));
+console.log(b.getSinglePieceAttackSquares(0, "queen","D4", 0));
+console.log(b.getSinglePieceAttackSquares(0, "king","H4", 0));
