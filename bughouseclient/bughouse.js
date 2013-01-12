@@ -172,10 +172,8 @@ exports.bughouse = function()
     return { "0": boards[0], 
             "1": boards[1], 
             "boardturns": boardturns,
-            "reserve0w": reserve0w, 
-            "reserve0b": reserve0b, 
-            "reserve1w": reserve1w, 
-            "reserve1b": reserve1b };
+            "reserve": reserve,
+          }
   }
 
   this.copyBoard = function(board) {
@@ -572,3 +570,4 @@ exports.bughouse = function()
 
   return this;
 }
+
