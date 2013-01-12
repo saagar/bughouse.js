@@ -274,7 +274,6 @@ GameView = Backbone.View.extend({
         });
     },
     render: function() {
-<<<<<<< HEAD
 		var template = _.template($("#template_game").html(), {});
 
 		this.$el.html(template);
