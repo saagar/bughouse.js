@@ -161,7 +161,7 @@ exports.bughouse = function()
     boards = [board0, board1];
     boardturns = [0,0]; //sets it to white's turn on both boards
     reserve = {
-      "1":
+      "0":
       {
         "white pawn": 0,
         "white knight": 0,
@@ -174,7 +174,7 @@ exports.bughouse = function()
         "black rook": 0,
         "black queen": 0
       },
-      "2":
+      "1":
       {
         "white pawn": 0,
         "white knight": 0,

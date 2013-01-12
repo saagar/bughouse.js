@@ -247,7 +247,10 @@ var setupBoard = function(board, bottom_color) {
 	    board.pieces[place] = piece;
 	    
 	}
+
+
     }
+
 
     // console.log(board.pieces);
 }
@@ -342,7 +345,13 @@ GameView = Backbone.View.extend({
 		    			}
 		    		}
 		    	}
+		    	//reset the texts
+		    	for(piece in data.reserve[k]) {
+		    		window.router.currentView.boards[k].bank_texts[piece].attr('text', 'x' + data.reserve[k][piece]);
+		    	}
 		    }
+
+
 	    }
 
 	    window.socket.on('bad_move', function(data) {
