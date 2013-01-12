@@ -307,7 +307,7 @@ exports.bughouse = function()
       var newTuple = [tuple[0] + knightMoves[e][0], tuple[1] + knightMoves[e][1]];
       if (newTuple[0] > 0 && newTuple[0] <= 8 && newTuple[1] > 0 && newTuple[1] <= 8)
       { // space is on board
-        newString = this.convertToString(newTuple);
+        var newString = this.convertToString(newTuple);
         var temp1 = this.getPieceData(boardnum, newString);
         if (temp1[1] === "") // if empty, then it's valid
         {
@@ -315,12 +315,23 @@ exports.bughouse = function()
         }
 
         else if (temp1[0] != player){ //if piece not player, capture
+          console.log("player" + player.toString());
           mvs.push(newString);
         }
       }
     }
 
     return mvs;
+  }
+
+  this.checkPawnMoves = function(boardnum, location, player){
+    var mvs = [];
+    var tuple = this.convertToTuple(location);
+
+    if (player == 0 && playertuple[1] == 2)
+    { // white player and pawn is at starting position
+      
+    }
   }
 
   this.checkKingMoves = function(boardnum, location, player){
