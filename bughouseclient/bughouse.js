@@ -310,7 +310,6 @@ exports.bughouse = function()
         {
           mvs.push(newString);
         }
-        console.log("player" + player.toString());
         else if (temp1[0] != player){ //if piece not player, capture
           mvs.push(newString);
         }
@@ -529,7 +528,6 @@ exports.bughouse = function()
     for(var i = tuple[0]+1; i <= 8; i++){
 
       var square = this.convertToString([i,tuple[1]]);
-      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
@@ -551,7 +549,6 @@ exports.bughouse = function()
     for(var i = tuple[0]-1; i > 0; i--){
       
       var square = this.convertToString([i,tuple[1]]);
-      console.log(square);
       var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
