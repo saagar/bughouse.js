@@ -2,13 +2,18 @@
 <html>
   <head>
     <title><%= title %></title>
-    <script type="text/javascript" src="/javascripts/raphael-min.js"></script>
+    
+    <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="/javascripts/jquery.js"></script>
+    <script type="text/javascript" src="/javascripts/raphael-min.js"></script>
     <script type="text/javascript" src="/javascripts/bughouse.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <div id="board_container">
+    	
+    </div>
   </body>
 </html>
