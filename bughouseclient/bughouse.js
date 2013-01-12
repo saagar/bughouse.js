@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 exports.bughouse = function()
 {
     // private variables
@@ -189,25 +191,25 @@ exports.bughouse = function()
   this.move = function(data)
   {
     // get the board
-    var moveBoardNum = int(data.charAt(0));
+    var moveBoardNum = parseInt(data.charAt(0));
     // get the color on the board
     var moveColor = data.charAt(1);
     var boardPlayerTuple = data.substring(0, 2);
     var fromLoc = data.substring(3, 5);
     var toLoc = data.substring(6);
-    var piece = getPieceData(moveBoardNum, fromLoc);
+    var piece = this.getPieceData(moveBoardNum, fromLoc);
     var legal = false;
     // There is no piece
     if (piece != "") {
       //first check if the current situation before moving is check
-      if (isInCheck(moveBoardNum)) {
+      if (this.isInCheck(moveBoardNum)) {
         // Check if it is a legal move
-        if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
-          var moveBoard = copyBoard(boards[moveBoardNum]);
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+          var moveBoard = this.copyBoard(boards[moveBoardNum]);
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
           // make sure we're not in check
-          if (!isInCheck(moveBoardNum)) {
+          if (!this.isInCheck(moveBoardNum)) {
             legal = true;
             // change it on the actual board
             boards[moveBoardNum][toLoc] = moveBoard[fromLoc];
@@ -216,11 +218,11 @@ exports.bughouse = function()
         }
       } else {
         //if current situation is not check, check if move is legal
-        if (_.contains(getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
           var moveBoard = boards[moveBoardNum];
           // We are capturing
           if (moveBoard[toLoc] != "") {
-            var capturedPiece = getPieceData(moveBoardNum, toLoc);
+            var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
             reserve[boardPlayerTuple].push(capturedPiece);
           }
           moveBoard[toLoc] = moveBoard[fromLoc];
@@ -230,7 +232,7 @@ exports.bughouse = function()
       }
     }
     
-    var json = getJSON();
+    var json = this.getJSON();
     json['wasLegal'] = legal;
     return json;
   }
@@ -241,13 +243,13 @@ exports.bughouse = function()
     // gets all squares that the OPPONENT's pieces are attacking
     if(!boardturns[boardnum]){
       //console.log("white's turn");
-      getAttackedSpaces(boardnum, 1); //gets spaces being attacked by black
+      this.getAttackedSpaces(boardnum, 1); //gets spaces being attacked by black
       //check if king is in any of the attacked spaces
       return false;
     }
     else{
       //console.log("black's turn");
-      getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
+      thia.getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
       //check if king is in any of the attacked spaces
       return false;
     }
@@ -261,10 +263,10 @@ exports.bughouse = function()
 
     for (e in boards[boardnum])
     {
-      var tempPiece = getPieceData(boardnum, e)
+      var tempPiece = this.getPieceData(boardnum, e)
       if (tempPiece[0] == player)
       { //boardnumber, type of piece, piece's location, player owning the piece
-        attackedSpaces = _.union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
+        attackedSpaces = _.union(attackedSpaces, this.getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
       }
     }
     return attackedSpaces;
@@ -276,27 +278,30 @@ exports.bughouse = function()
     switch(piece)
     {
       case "knight":
-        return checkKnightMoves(boardnum, location, player);
+        return [];
+        // return this.checkKnightMoves(boardnum, location, player);
       case "pawn":
-        return checkPawnMoves(boardnum, location, player);
+        return [];
+        // return this.checkPawnMoves(boardnum, location, player);
       case "king":
-        return checkKingMoves(boardnum, location, player);
-      case "queen":
+        return [];
+        //return this.checkKingMoves(boardnum, location, player);
+      case "queen": {}
         // this case can use bishop and rook checks
-        var mvs = checkDiagonalMoves(boardnum, location, player);
-        mvs.push(checkHVMoves(boardnum, location, player));
+        var mvs = this.checkDiagonalMoves(boardnum, location, player);
+        mvs.push(this.checkHVMoves(boardnum, location, player));
         return mvs;
       case "bishop":
-        return checkDiagonalMoves(boardnum, location, player);
+        return this.checkDiagonalMoves(boardnum, location, player);
       case "rook":
-        return checkHVMoves(boardnum, location, player);
+        return this.checkHVMoves(boardnum, location, player);
 
     }
   }
  
   this.checkDiagonalMoves = function(boardnum, location, player){
     var mvs = [];
-    var tuple = convertToTuple(location);
+    var tuple = this.convertToTuple(location);
 
     var j = tuple[1];
     // check lower right diagonal
@@ -307,8 +312,8 @@ exports.bughouse = function()
         break;
       }
       else {
-        var square = convertToString([tuple[0],i]);
-        var pieceAtSquare = getPieceData(boardnum, square);
+        var square = this.convertToString([tuple[0],i]);
+        var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
           mvs.push(square);
@@ -332,8 +337,8 @@ exports.bughouse = function()
         break;
       }
       else {
-        var square = convertToString([tuple[0],i]);
-        var pieceAtSquare = getPieceData(boardnum, square);
+        var square = this.convertToString([tuple[0],i]);
+        var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
           mvs.push(square);
@@ -358,8 +363,8 @@ exports.bughouse = function()
         break;
       }
       else {
-        var square = convertToString([tuple[0],i]);
-        var pieceAtSquare = getPieceData(boardnum, square);
+        var square = this.convertToString([tuple[0],i]);
+        var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
           mvs.push(square);
@@ -384,8 +389,8 @@ exports.bughouse = function()
         break;
       }
       else {
-        var square = convertToString([tuple[0],i]);
-        var pieceAtSquare = getPieceData(boardnum, square);
+        var square = this.convertToString([tuple[0],i]);
+        var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
           mvs.push(square);
@@ -401,18 +406,20 @@ exports.bughouse = function()
         }
       }
     }
+
+    return mvs;
   }
 
   this.checkHVMoves = function(boardnum, location, player){
     var mvs = [];
-    var tuple = convertToTuple(location);
+    var tuple = this.convertToTuple(location);
 
     // check vertical mvs
       
     // go UP first
     for(var i = tuple[1]; i <= 8; i++){
-      var square = convertToString([tuple[0],i]);
-      var pieceAtSquare = getPieceData(boardnum, square);
+      var square = this.convertToString([tuple[0],i]);
+      var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){
@@ -430,8 +437,8 @@ exports.bughouse = function()
     }
     // go DOWN after
     for(var i = tuple[1]; i >= 0; i--){
-      var square = convertToString([tuple[0],i]);
-      var pieceAtSquare = getPieceData(boardnum, square);
+      var square = this.convertToString([tuple[0],i]);
+      var pieceAtSquare = this.getPieceData(boardnum, square);
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){
         mvs.push(square);
@@ -452,8 +459,8 @@ exports.bughouse = function()
     // go RIGHT first
     for(var i = tuple[0]; i <= 8; i++){
 
-      var square = convertToString([tuple[0],i]);
-      var pieceAtSquare = getPieceData(boardnum, square);
+      var square = this.convertToString([tuple[0],i]);
+      var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){
@@ -473,8 +480,8 @@ exports.bughouse = function()
     // go LEFT after
     for(var i = tuple[0]; i >= 0; i++){
 
-      var square = convertToString([tuple[0],i]);
-      var pieceAtSquare = getPieceData(boardnum, square);
+      var square = this.convertToString([tuple[0],i]);
+      var pieceAtSquare = this.getPieceData(boardnum, square);
       
       // if no piece, valid move
       if(pieceAtSquare[1] == ""){

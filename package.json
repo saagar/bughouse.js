@@ -10,6 +10,7 @@
     "socket.io" : "*",
     "ejs": "*",
     "chess": "*",
-    "everyauth": "*"
+    "everyauth": "*",
+    "underscore": "*"
   }
 }

@@ -106,7 +106,6 @@ io.sockets.on('connection', function(socket) {
             // create a new room
             games[data.room] = new Game();
         }
-        console.log(games[data.room]);
         console.log(games[data.room].bughouse.getJSON());
 
         games[data.room].players[playerId] = 1;
@@ -134,6 +133,15 @@ io.sockets.on('connection', function(socket) {
         //console.log(games[room].pieces[data.board]);
         // update room state
         data.name = games[room].pieces[data.board][data.from];
+
+        var move = '';
+        move += data.board;
+        move += games[room].bughouse.getPieceData(data.board, data.from)[0] == 0 ? 'w' : 'b';
+        move += "_";
+        move += data.from + "-" + data.to;
+        console.log(move);
+        console.log(games[room].bughouse.move(move));
+
         if(data.name.slice(0, 5) == games[room].turns[data.board]) {
 
             if(games[room].pieces[data.board][data.from] != '') {
