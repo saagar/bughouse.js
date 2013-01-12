@@ -11,7 +11,7 @@ $(document).ready(function() {
 	
 	var bottom_color = 'white';
 
-	var place_piece = function(name, place) {
+	var placePiece = function(name, place) {
 		var i, j;
 		i = place.charCodeAt(0) - 65;
 		j = place.charCodeAt(1) - 49;
@@ -29,14 +29,8 @@ $(document).ready(function() {
 			board_squares[i][j] = paper.rect(i * square_size, j * square_size, square_size, square_size).attr({'stroke-width': 0, 'fill': fill_color});
 		}
 	}
-	// setup pawns 
-	for( i = 0 ; i < 8 ; i++ ) {
-		paper.image('/images/pieces/white pawn.svg', i * square_size, square_size * 6, 60, 60);
-		paper.image('/images/pieces/black pawn.svg', i * square_size, square_size, 60, 60);
-	}
 
-	// piece starting locations
-	var starting_places = {};
+	
 
 	var start = function () {    
 	  this.ox = this.attr("x");         
@@ -50,8 +44,49 @@ $(document).ready(function() {
 	  this.animate({r: 50, opacity: 1}, 500, ">");
 	};
 
+	for(var place in starting_places) {
+		var piece = placePiece(starting_places[place], place);
+		piece.drag(move, start, up);
+	}
 
-	var rook = place_piece('white rook', 'A1');
-	rook.drag(move, start, up);
-	place_piece('white rook', 'H1');
+
 });
+
+// piece starting locations
+var starting_places = {
+	'A1': 'white rook',
+	'B1': 'white knight',
+	'C1': 'white bishop',
+	'D1': 'white queen',
+	'E1': 'white king',
+	'F1': 'white bishop',
+	'G1': 'white knight',
+	'H1': 'white rook',
+
+	'A2': 'white pawn',
+	'B2': 'white pawn',
+	'C2': 'white pawn',
+	'D2': 'white pawn',
+	'E2': 'white pawn',
+	'F2': 'white pawn',
+	'G2': 'white pawn',
+	'H2': 'white pawn',
+
+	'A7': 'black pawn',
+	'B7': 'black pawn',
+	'C7': 'black pawn',
+	'D7': 'black pawn',
+	'E7': 'black pawn',
+	'F7': 'black pawn',
+	'G7': 'black pawn',
+	'H7': 'black pawn',
+
+	'A8': 'black rook',
+	'B8': 'black knight',
+	'C8': 'black bishop',
+	'D8': 'black queen',
+	'E8': 'black king',
+	'F8': 'black bishop',
+	'G8': 'black knight',
+	'H8': 'black rook',
+};
