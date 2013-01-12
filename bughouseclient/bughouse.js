@@ -182,6 +182,18 @@ function bughouse()
   // checks validity of move
   this.move = function(data)
   {
+    //first check if the current situation before moving is check
+    //if so, then check if next move is also check
+    // if so, then not legal.
+    // if not, then check if move is legal
+    // if so, then ok
+    //if not, then its wrong
+
+    //if current situation is not check, check if move is legal
+    //if so, make sure second position is not check
+    //if not check then legal
+
+
     return;
   }
 
