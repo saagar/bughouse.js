@@ -227,10 +227,10 @@ function bughouse()
       var tempPiece = getPieceData(boardnum, e)
       if (tempPiece[0] == player)
       { //boardnumber, type of piece, piece's location, player owning the piece
-        getSinglePieceAttackSquares(boardnum, tempPiece[1], e, tempPiece[0])
+        attackedSpaces = _union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
       }
-      //alert(e); //e is going to be the key, that is, for example, "A1"
     }
+    return attackedSpaces;
   }
 
   // example: 0, "knight", "A1", 1
