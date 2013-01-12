@@ -54,7 +54,7 @@ exports.bughouse = function()
       "C4": "",
       "D4": "",
       "E4": "",
-      "F4": "",
+      "F4": "white rook",
       "G4": "",
       "H4": "",
       "A5": "",
@@ -197,14 +197,14 @@ exports.bughouse = function()
     var boardPlayerTuple = data.substring(0, 2);
     var fromLoc = data.substring(3, 5);
     var toLoc = data.substring(6);
-    var piece = this.getPieceData(moveBoardNum, fromLoc);
+    var piece = this.getPieceData(moveBoardNum, fromLoc)[1];
     var legal = false;
     // There is no piece
     if (piece != "") {
       //first check if the current situation before moving is check
       if (this.isInCheck(moveBoardNum)) {
         // Check if it is a legal move
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           var moveBoard = this.copyBoard(boards[moveBoardNum]);
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
@@ -218,8 +218,8 @@ exports.bughouse = function()
         }
       } else {
         //if current situation is not check, check if move is legal
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
-          var moveBoard = boards[moveBoardNum];
+        var moveBoard = boards[moveBoardNum];
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           // We are capturing
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
@@ -295,7 +295,6 @@ exports.bughouse = function()
         return this.checkDiagonalMoves(boardnum, location, player);
       case "rook":
         return this.checkHVMoves(boardnum, location, player);
-
     }
   }
  
@@ -559,6 +558,7 @@ exports.bughouse = function()
   // boardnum should be an int such as 0
   this.getPieceData = function(boardnum, space)
   {
+    console.log(boardnum);
     var temp = boards[boardnum][space].split(" ");
 
     if (temp[0] === "white") //piece is white
@@ -576,5 +576,5 @@ exports.bughouse = function()
   }
 }
 
-var b = new bughouse();
-console.log(b.getJSON());
+var b = new exports.bughouse();
+console.log(b.getSinglePieceAttackSquares(0, "rook", "F4", "w"));
