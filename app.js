@@ -31,7 +31,14 @@ app.configure('development', function() {
     app.use(express.errorHandler());
 });
 
+var Game = function() {
+    this.board_state = {};
+    this.players = [];
+    this.timer = null;
 
+}
+
+// keep state of all games
 var games = {};
 
 var users = {};
@@ -59,10 +66,14 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('join_room', function(data) {
         console.log('Joining ' + data.room);
+        if(!(data.room in games)) {
+            // create a new room
+            games[data.room] = new Game();
+        }
         socket.join(data.room);
         // add user to room
         console.log("new player is: " + playerId);
-        socket.emit('send_pid',  {id: playerId});
+        socket.emit('send_state',  {id: playerId, state: games[data.room]});
     });
 
     socket.on('send_move', function(data) {
