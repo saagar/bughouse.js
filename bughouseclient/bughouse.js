@@ -389,16 +389,20 @@ exports.bughouse = function()
 
     // get top 3
     if ((tuple[1]+1 <= 8)){
-      sqs.push(this.convertToString([tuple[0],tuple[1]+1])); 
-      sqs.push(this.convertToString([tuple[0]+1,tuple[1]+1]));
-      sqs.push(this.convertToString([tuple[0]-1,tuple[1]+1]));
+      sqs.push(this.convertToString([tuple[0],tuple[1]+1]));
+      if (tuple[0]+1 <= 8)
+        sqs.push(this.convertToString([tuple[0]+1,tuple[1]+1]));
+      if (tuple[0]-1 > 0)
+        sqs.push(this.convertToString([tuple[0]-1,tuple[1]+1]));
     }
 
     // get bottom 3
     if (tuple[1]-1 > 0){
       sqs.push(this.convertToString([tuple[0],tuple[1]-1])); 
-      sqs.push(this.convertToString([tuple[0]+1,tuple[1]-1]));
-      sqs.push(this.convertToString([tuple[0]-1,tuple[1]-1]));
+      if (tuple[0]+1 <= 8)
+        sqs.push(this.convertToString([tuple[0]+1,tuple[1]-1]));
+      if (tuple[0]-1 > 0)
+        sqs.push(this.convertToString([tuple[0]-1,tuple[1]-1]));
     }
 
     // get left
@@ -409,8 +413,10 @@ exports.bughouse = function()
     if (tuple[0]+1 <= 8)
       sqs.push(this.convertToString([tuple[0]+1,tuple[1]])); 
 
+    //console.log(sqs);
     var len = sqs.length;
     for (var i = 0; i < len; i++){
+      console.log(sqs[i]);
       var pieceAtSquare = this.getPieceData(boardnum, sqs[i]);
       // if no piece or piece is other color, valid move
       if ((pieceAtSquare[1] == "") || (pieceAtSquare[0] != player)){
@@ -426,14 +432,14 @@ exports.bughouse = function()
 
     var j = tuple[1];
     // check lower right diagonal
-    for(var i = tuple[0]; i <= 8; i++){
+    for(var i = tuple[0]+1; i <= 8; i++){
       j--;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
         break;
       }
       else {
-        var square = this.convertToString([tuple[0],i]);
+        var square = this.convertToString([i,j]);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -451,14 +457,14 @@ exports.bughouse = function()
       }
     }
     // check upper right diagonal
-    for(var i = tuple[0]; i <= 8; i++){
+    for(var i = tuple[0]+1; i <= 8; i++){
       j++;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
         break;
       }
       else {
-        var square = this.convertToString([tuple[0],i]);
+        var square = this.convertToString([i,j]);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -477,14 +483,14 @@ exports.bughouse = function()
     }
     // check lower left diagonal
     
-    for(var i = tuple[0]; i >= 0; i++){
+    for(var i = tuple[0]-1; i >= 0; i++){
       j--;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
         break;
       }
       else {
-        var square = this.convertToString([tuple[0],i]);
+        var square = this.convertToString([i,j]);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
@@ -503,14 +509,14 @@ exports.bughouse = function()
     }
     
     // check upper left diagonal
-    for(var i = tuple[0]; i >= 0; i++){
+    for(var i = tuple[0]-1; i >= 0; i++){
       j--;
       // check if valid square
       if ((i < 1) || (i > 8) || (j < 1) || (j > 8)){
         break;
       }
       else {
-        var square = this.convertToString([tuple[0],i]);
+        var square = this.convertToString([i,j]);
         var pieceAtSquare = this.getPieceData(boardnum, square);
         // if no piece, valid move
         if(pieceAtSquare[1] == ""){
