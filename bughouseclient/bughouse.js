@@ -258,7 +258,94 @@ function bughouse()
 
   }
 
-  this.
+  this.checkHVMoves(boardnum, piece, location, player){
+    var mvs = [];
+    var tuple = convertToTuple(location);
+
+    // check vertical mvs
+      
+    // go UP first
+    for(var i = tuple[1]; i <= 8; i++){
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+    // go DOWN after
+    for(var i = tuple[1]; i >= 0; i--){
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+
+    // check horizontal mvs
+
+    // go RIGHT first
+    for(var i = tuple[0]; i <= 8; i++){
+
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+
+    // go LEFT after
+    for(var i = tuple[0]; i >= 0; i++){
+
+      var square = convertToString([tuple[0],i]);
+      var pieceAtSquare = getPieceData(boardnum, square);
+      
+      // if no piece, valid move
+      if(pieceAtSquare[1] == ""){
+        mvs.push(square);
+      }
+      // if piece is not player piece, valid move (capture), and exit loop
+      else if(pieceAtSquare[0] != player){
+        mvs.push(square);
+        break;
+      }
+      // if piece is player piece, invalid move, exit loop
+      else{
+        break;
+      }
+    }
+  }
 
   // converts a space name like "A1" into a tuple like [1,1]
   this.convertToTuple = function(space)
