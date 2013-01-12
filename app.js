@@ -7,6 +7,7 @@ var express = require('express')
 , user = require('./routes/user')
 , http = require('http')
 , path = require('path')
+, bg = require('./bughouseclient/bughouse')
 , everyauth = require('everyauth');
 
 var app = express();
@@ -62,6 +63,7 @@ function emptyBoard() {
 
 var Game = function() {
     this.pieces = [emptyBoard(), emptyBoard()];
+    this.bughouse = bg.bughouse();
     this.turns = ['white', 'white'];
     this.players = {};
     this.timer = null;
@@ -104,6 +106,7 @@ io.sockets.on('connection', function(socket) {
             // create a new room
             games[data.room] = new Game();
         }
+        console.log(games[data.room].bughouse.getJSON());
 
         games[data.room].players[playerId] = 1;
         socket.join(data.room);
@@ -130,6 +133,15 @@ io.sockets.on('connection', function(socket) {
         //console.log(games[room].pieces[data.board]);
         // update room state
         data.name = games[room].pieces[data.board][data.from];
+
+        var move = '';
+        move += data.board;
+        move += games[room].bughouse.getPieceData(data.board, data.from)[0] == 0 ? 'w' : 'b';
+        move += "_";
+        move += data.from + "-" + data.to;
+        console.log(move);
+        console.log(games[room].bughouse.move(move));
+
         if(data.name.slice(0, 5) == games[room].turns[data.board]) {
 
             if(games[room].pieces[data.board][data.from] != '') {
