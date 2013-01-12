@@ -52,3 +52,7 @@ a {
 .game-list li:hover {
 	background-color: #EEE;
 }
+
+.header {
+	display: inline-block;
+}

@@ -4,13 +4,29 @@ LobbyView = Backbone.View.extend({
 	//this.render();
     }, 
     render: function() {
-	var template = _.template($("#template_lobby").html(), {});
-	this.$el.html(template);
-	return this;
+		var template = _.template($("#template_lobby").html(), {});
+
+		window.socket.on('room_created', function(data) {
+			window.router.navigate("game/" + data.room, {trigger: true});
+		});
+
+		window.socket.on('game_list', function(data) {
+			console.log(data);
+			var template = _.template('<% for(id in games) { %><li><a href="#game/<%=id%>">game #<%=id%>feesix, m, neal_wu, rayman</a></li><% } %>', {games: data});
+			$('.game-list').html(template);
+
+		});
+
+		this.$el.html(template);
+		$('#new_game').click(function(event) {
+			event.preventDefault();
+			window.socket.emit('request_room');
+		});
+		return this;
     },
     remove: function() {
-	this.$el.empty();
-	return this;
+		this.$el.empty();
+		return this;
     },
 });
 
@@ -261,8 +277,8 @@ GameView = Backbone.View.extend({
 	    window.socket.on('send_state', function(data) {
 	    	console.log('state received');
 	    	console.log(data);
-	    	window.router.currentView.boards[0].state = data.state.pieces[0];
-	    	window.router.currentView.boards[1].state = data.state.pieces[1];
+	    	window.router.currentView.boards[0].state = data.state[0];
+	    	window.router.currentView.boards[1].state = data.state[1];
 
 	    	setupBoard(window.router.currentView.boards[0], 'white');
 			setupBoard(window.router.currentView.boards[1], 'black');
@@ -302,7 +318,8 @@ AppRouter = Backbone.Router.extend({
     },
 
     showGame: function(id) {
-	this.switchView(new GameView({'gameId': id}));
+
+		this.switchView(new GameView({'gameId': id}));
     }
 });
 

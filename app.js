@@ -74,6 +74,8 @@ var Game = function() {
 // keep state of all games
 var games = {};
 
+var games_played = 1;
+
 var users = {};
 var user_count = 0;
 
@@ -100,20 +102,34 @@ io.sockets.on('connection', function(socket) {
     var playerId = ++user_count;
     var room = null;
 
+    var sendGames = function() {
+        io.sockets.emit('game_list', games);
+    }
+
+    socket.on('request_room', function(data) {
+        // create a new room
+        games[games_played] = new Game();
+        
+        socket.emit('room_created', {room: games_played});
+        games_played++;
+        sendGames();
+    });
+
     socket.on('join_room', function(data) {
         console.log('Joining ' + data.room);
         if(!(data.room in games)) {
             // create a new room
             games[data.room] = new Game();
+            games_played++;
         }
-        console.log(games[data.room].bughouse.getJSON());
+        //console.log(games[data.room].bughouse.getJSON());
 
         games[data.room].players[playerId] = 1;
         socket.join(data.room);
         room = data.room;
         // add user to room
         console.log("new player is: " + playerId);
-        socket.emit('send_state',  {id: playerId, state: games[data.room]});
+        socket.emit('send_state',  {id: playerId, state: games[data.room].bughouse.getJSON()});
     });
 
     var leaveRoom = function(roomName) {
