@@ -159,10 +159,10 @@ function bughouse()
     boards = [board0, board1];
     boardturns = [0,0]; //sets it to white's turn on both boards
     reserve = {
-      "0w" : [];
-      "0b" : [];
-      "1w" : [];
-      "1b" : [];
+      "0w" : [],
+      "0b" : [],
+      "1w" : [],
+      "1b" : [],
     };
   }()
 
@@ -172,10 +172,8 @@ function bughouse()
     return { "0": boards[0], 
             "1": boards[1], 
             "boardturns": boardturns,
-            "reserve0w": reserve0w, 
-            "reserve0b": reserve0b, 
-            "reserve1w": reserve1w, 
-            "reserve1b": reserve1b };
+            "reserve": reserve,
+          }
   }
 
   this.copyBoard = function(board) {
@@ -273,7 +271,7 @@ function bughouse()
   }
 
   // example: 0, "knight", "A1", 1
-  this.getSinglePieceAttackSquares(boardnum, piece, location, player)
+  this.getSinglePieceAttackSquares = function(boardnum, piece, location, player)
   {
     switch(piece)
     {
@@ -297,7 +295,7 @@ function bughouse()
 
   }
 
-  this.checkHVMoves(boardnum, location, player){
+  this.checkHVMoves = function(boardnum, location, player){
     var mvs = [];
     var tuple = convertToTuple(location);
 
