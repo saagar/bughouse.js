@@ -197,14 +197,14 @@ exports.bughouse = function()
     var boardPlayerTuple = data.substring(0, 2);
     var fromLoc = data.substring(3, 5);
     var toLoc = data.substring(6);
-    var piece = this.getPieceData(moveBoardNum, fromLoc);
+    var piece = this.getPieceData(moveBoardNum, fromLoc)[1];
     var legal = false;
     // There is no piece
     if (piece != "") {
       //first check if the current situation before moving is check
       if (this.isInCheck(moveBoardNum)) {
         // Check if it is a legal move
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           var moveBoard = this.copyBoard(boards[moveBoardNum]);
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
@@ -218,8 +218,8 @@ exports.bughouse = function()
         }
       } else {
         //if current situation is not check, check if move is legal
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoard, piece, fromLoc, moveColor), toLoc)) {
-          var moveBoard = boards[moveBoardNum];
+        var moveBoard = boards[moveBoardNum];
+        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           // We are capturing
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
@@ -295,10 +295,72 @@ exports.bughouse = function()
         return this.checkDiagonalMoves(boardnum, location, player);
       case "rook":
         return this.checkHVMoves(boardnum, location, player);
-
     }
   }
- 
+
+  this.checkKnightMoves = function(boardnum, location, player){
+    var mvs = [];
+    var tuple = this.convertToTuple(location);
+
+    for (e in knightMoves)
+    {
+      var newTuple = [tuple[0] + knightMoves[e][0], tuple[1] + knightMoves[e][1]];
+      if (newTuple[0] > 0 && newTuple[0] <= 8 && newTuple[1] > 0 && newTuple[1] <= 8)
+      { // space is on board
+        newString = this.convertToString(newTuple);
+        var temp1 = this.getPieceData(boardnum, newString);
+        if (temp1[1] === "") // if empty, then it's valid
+        {
+          mvs.push(newString);
+        }
+
+        else if (temp1[0] != player){ //if piece not player, capture
+          mvs.push(newString);
+        }
+      }
+    }
+
+    return mvs;
+  }
+
+  this.checkKingMoves = function(boardnum, location, player){
+    var mvs = [];
+    var sqs = [];
+    var tuple = this.convertToTuple(location);
+
+    // get top 3
+    if ((tuple[1]+1 <= 8)){
+      sqs.push(this.convertToString([tuple[0],tuple[1]+1])); 
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]+1]));
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]+1]));
+    }
+
+    // get bottom 3
+    if (tuple[1]-1 > 0){
+      sqs.push(this.convertToString([tuple[0],tuple[1]-1])); 
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]-1]));
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]-1]));
+    }
+
+    // get left
+    if (tuple[0]-1 > 0)
+      sqs.push(this.convertToString([tuple[0]-1,tuple[1]])); 
+    
+    // get right
+    if (tuple[0]+1 <= 8)
+      sqs.push(this.convertToString([tuple[0]+1,tuple[1]])); 
+
+    var len = sqs.length;
+    for (var i = 0; i < len; i++){
+      var pieceAtSquare = this.getPieceData(boardnum, sqs[i]);
+      // if no piece or piece is other color, valid move
+      if ((pieceAtSquare[1] == "") || (pieceAtSquare[0] != player)){
+        mvs.push(sqs[i]);
+      }
+    }
+    return mvs;
+  }
+
   this.checkDiagonalMoves = function(boardnum, location, player){
     var mvs = [];
     var tuple = this.convertToTuple(location);
@@ -559,6 +621,7 @@ exports.bughouse = function()
   // boardnum should be an int such as 0
   this.getPieceData = function(boardnum, space)
   {
+    console.log(boardnum);
     var temp = boards[boardnum][space].split(" ");
 
     if (temp[0] === "white") //piece is white
@@ -574,7 +637,7 @@ exports.bughouse = function()
       return [-1, ""];
     }
   }
-
-  return this;
 }
 
+var b = new exports.bughouse();
+console.log(b.checkHVMoves(0, "F4", "w"));
