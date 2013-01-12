@@ -188,6 +188,7 @@ exports.bughouse = function()
 
   // checks validity of move 
   // data: "0b_F2-G4"
+  // data: "@"
   this.move = function(data)
   {
     // get the board
@@ -203,20 +204,6 @@ exports.bughouse = function()
     if (piece != "") {
       //first check if the current situation before moving is check
       if (this.isInCheck(moveBoardNum)) {
-        // Check if it is a legal move
-        if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
-          var moveBoard = this.copyBoard(boards[moveBoardNum]);
-          moveBoard[toLoc] = moveBoard[fromLoc];
-          moveBoard[fromLoc] = "";
-          // make sure we're not in check
-          if (!this.isInCheckBoard(moveBoard, moveBoardNum)) {
-            legal = true;
-            // change it on the actual board
-            boards[moveBoardNum] = moveBoard;
-            boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
-          }
-        }
-      } else {
         //if current situation is not check, check if move is legal
         if (_.contains(this.getSinglePieceAttackSquares(moveBoardNum, piece, fromLoc, moveColor), toLoc)) {
           var moveBoard = this.copyBoard(boards[moveBoardNum]);
