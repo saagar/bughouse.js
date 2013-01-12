@@ -323,6 +323,16 @@ exports.bughouse = function()
     return mvs;
   }
 
+  this.checkPawnMoves = function(boardnum, location, player){
+    var mvs = [];
+    var tuple = this.convertToTuple(location);
+
+    if (player == 0 && playertuple[1] == 2)
+    { // white player and pawn is at starting position
+      
+    }
+  }
+
   this.checkKingMoves = function(boardnum, location, player){
     var mvs = [];
     var sqs = [];
