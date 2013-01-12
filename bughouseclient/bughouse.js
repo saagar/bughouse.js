@@ -227,7 +227,7 @@ function bughouse()
       var tempPiece = getPieceData(boardnum, e)
       if (tempPiece[0] == player)
       { //boardnumber, type of piece, piece's location, player owning the piece
-        attackedSpaces = _union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
+        attackedSpaces = _.union(attackedSpaces, getSinglePieceAttackSquares(boardnum, tempPiece[1], e))
       }
     }
     return attackedSpaces;
