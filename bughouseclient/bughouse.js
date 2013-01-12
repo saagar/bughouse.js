@@ -323,10 +323,63 @@ exports.bughouse = function()
     var mvs = [];
     var tuple = this.convertToTuple(location);
 
-    if (player == 0 && playertuple[1] == 2)
-    { // white player and pawn is at starting position
-      
+    if (player == 0)
+    { // white pawn
+      mvs.push(this.convertToString([tuple[0], tuple[1] + 1]));
+      if (tuple[1] == 2)
+      { //also at starting position
+        mvs.push(this.convertToString([tuple[0], tuple[1] + 2]));
+      }
+
+      var diagleft;
+      var diagright;
+
+      if (tuple[0]-1 > 0 && tuple[1]+1 <= 8)
+      { //diag up left is in board
+        diagleft = this.convertToString([tuple[0]-1, tuple[1]+1]);
+        if getPieceData(boardnum, diagleft)[1] != player{
+          //opponent piece is there
+          mvs.push(diagleft);
+        }
+      }
+
+      if (tuple[0]+1 <= 8 && tuple[1]+1 <= 8)
+      { //diag up right is in board
+        diagright = this.convertToString([tuple[0]+1, tuple[1]+1]);
+        if getPieceData(boardnum, diagright)[1] != player{
+          //opponent piece is there
+          mvs.push(diagright);
+        }
+      }
     }
+
+    else if (player == 1)
+    { // black player
+      mvs.push(this.convertToString([tuple[0], tuple[1] - 1]));
+      if (tuple[1] == 7)
+      { //also at starting position
+        mvs.push(this.convertToString([tuple[0], tuple[1] - 2]));
+      }
+
+      var diagleft;
+      var diagright;
+      if (tuple[0]-1 > 0 && tuple[1]-1 > 0)
+      { //if going down and left is still in board
+        diagleft = this.convertToString([tuple[0]-1, tuple[1]-1]);
+        if getPieceData(boardnum, diagleft)[1] != player{
+          mvs.push(diagleft);
+        }
+      }
+
+      if (tuple[0]+1 <= 8 && tuple[1]-1 > 0)
+      { //if going down and right is still in board
+        diagright = this.convertToString([tuple[0]+1, tuple[1]-1]);
+        if getPieceData(boardnum, diagleft)[1] != player{
+          mvs.push(diagright);
+        }
+      }
+    }
+    return mvs;
   }
 
   this.checkKingMoves = function(boardnum, location, player){
