@@ -284,6 +284,31 @@ function bughouse()
     } 
   }
 
+  // converts a two element array into square name:
+  // for example, converts "[3, 1]" into "C1"
+  this.convertToString = function(tuple)
+  {
+    var row = tuple[1];
+    switch(tuple[0])
+    {
+      case 1:
+        return "A" + row.toString();
+      case 2:
+        return "B" + row.toString();
+      case 3:
+        return "C" + row.toString();
+      case 4:
+        return "D" + row.toString();
+      case 5:
+        return "E" + row.toString();
+      case 6:
+        return "F" + row.toString();
+      case 7:
+        return "G" + row.toString();
+      case 8:
+        return "H" + row.toString();
+    }
+  }
 
   // returns array of [pieceowner, piecetype]
   // pieceowner: 0 for white, 1 for black, -1 for empty
