@@ -255,7 +255,6 @@ function bughouse()
         return checkHVMoves(boardnum, location, player);
 
     }
-
   }
 
   this.checkHVMoves(boardnum, location, player){
@@ -421,6 +420,3 @@ function bughouse()
     }
   }
 }
-
-var b = new bughouse();
-console.log(b.getJSON());
