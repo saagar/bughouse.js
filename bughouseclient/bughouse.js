@@ -637,6 +637,8 @@ exports.bughouse = function()
       return [-1, ""];
     }
   }
+
+  return this;
 }
 
 var b = new exports.bughouse();

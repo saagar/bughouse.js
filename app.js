@@ -122,7 +122,7 @@ io.sockets.on('connection', function(socket) {
             games[data.room] = new Game();
             games_played++;
         }
-        console.log(games[data.room].bughouse.getJSON());
+        //console.log(games[data.room].bughouse.getJSON());
 
         games[data.room].players[playerId] = 1;
         socket.join(data.room);
