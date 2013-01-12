@@ -196,11 +196,11 @@ exports.bughouse = function()
     // get the color on the board
     var moveColor = data.charAt(1) == 'w' ? 0 : 1;
     if (data.charAt(2) == ":") {
-      var toLoc = data.split('_')[2];
+      var toLoc = data.split('_')[1];
       piece = data.split(':')[1].split('_')[0];
       boardPiece = this.getPieceData(moveBoardNum, toLoc);
-      if (boardPiece == "") {
-        boards[moveBoardNum][toLoc] = piece;
+      if (boardPiece[1] == "") {
+        boards[moveBoardNum][toLoc] = (moveColor == 0 ? 'white ' : 'black ') + piece;
         legal = true;
         boardturns[moveBoardNum] = 1-boardturns[moveBoardNum];
       }
