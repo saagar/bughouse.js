@@ -244,7 +244,7 @@ exports.bughouse = function()
           // We are capturing
           if (moveBoard[toLoc] != "") {
             var capturedPiece = this.getPieceData(moveBoardNum, toLoc);
-            reserve[1-boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "white " : "black ") + capturedPiece[1]] += 1;
+            reserve[1-boardPlayerTuple.charAt(0)][((capturedPiece[0]) ? "black " : "white ") + capturedPiece[1]] += 1;
           }
           moveBoard[toLoc] = moveBoard[fromLoc];
           moveBoard[fromLoc] = "";
