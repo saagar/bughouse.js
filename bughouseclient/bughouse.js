@@ -37,7 +37,7 @@ exports.bughouse = function()
       "B2": "white pawn",
       "C2": "white pawn",
       "D2": "white pawn",
-      "E2": "white pawn",
+      "E2": "",
       "F2": "white pawn",
       "G2": "white pawn",
       "H2": "white pawn",
@@ -51,8 +51,8 @@ exports.bughouse = function()
       "H3": "",
       "A4": "",
       "B4": "",
-      "C4": "",
-      "D4": "white queen",
+      "C4": "black queen",
+      "D4": "",
       "E4": "",
       "F4": "",
       "G4": "",
@@ -76,7 +76,7 @@ exports.bughouse = function()
       "A7": "black pawn",
       "B7": "black pawn",
       "C7": "black pawn",
-      "D7": "",
+      "D7": "black pawn",
       "E7": "black pawn",
       "F7": "black pawn",
       "G7": "black pawn",
@@ -243,13 +243,12 @@ exports.bughouse = function()
   this.isInCheck = function(boardnum)
   {
     // gets all squares that the OPPONENT's pieces are attacking
-    if(!boardturns[boardnum]){
+    if(!boardturns[boardnum]) {
       //console.log("white's turn");
       this.getAttackedSpaces(boardnum, 1); //gets spaces being attacked by black
       //check if king is in any of the attacked spaces
       return false;
-    }
-    else{
+    } else {
       //console.log("black's turn");
       this.getAttackedSpaces(boardnum, 0); //get spaces being attacked by white
       //check if king is in any of the attacked spaces
@@ -261,19 +260,32 @@ exports.bughouse = function()
   this.isInCheckBoard = function(board, boardnum)
   {
     // gets all squares that the OPPONENT's pieces are attacking
-    if(!boardturns[boardnum]){
+    if(boardturns[boardnum] == 0) {
       //console.log("white's turn");
-      this.getBoardAttackedSpaces(board, 1, boardnum); //gets spaces being attacked by black
+      var spaces = this.getBoardAttackedSpaces(board, 1, boardnum); //gets spaces being attacked by black
+      console.log(spaces);
       //check if king is in any of the attacked spaces
-      return false;
-    }
-    else{
+      for (e in board) {
+        if (this.getBoardPieceData(board, e)[1] === "king" && this.getBoardPieceData(board, e)[0] == 0) {
+          console.log(e);
+          if(_.contains(spaces, e)) {
+            return true;
+          }
+        }
+      }
+    } else {
       //console.log("black's turn");
       this.getBoardAttackedSpaces(board, 0, boardnum); //get spaces being attacked by white
       //check if king is in any of the attacked spaces
-      return false;
+      for (e in boards[boardnum]) {
+        if (this.getPieceData(boardnum, e)[1] === "king" && this.getPieceData(boardnum, e)[0] == 1) {
+          if(_.contains(spaces, e)) {
+            return true;
+          }
+        }
+      }
     }
-    return true;
+    return false;
   }
 
   this.getBoardAttackedSpaces = function(board, player, boardnum)
@@ -766,11 +778,30 @@ exports.bughouse = function()
     }
   }
 
+  this.getBoardPieceData = function(board, space)
+  {
+//    console.log(boardnum);
+    var temp = board[space].split(" ");
+
+    if (temp[0] === "white") //piece is white
+    {
+      return [0, temp[1]];
+    }
+    else if (temp[0] === "black") //piece is black
+    {
+      return [1, temp[1]];
+    }
+    else //no piece there
+    {
+      return [-1, ""];
+    }
+  }
+
   return this;
 }
 
 var b = new exports.bughouse();
-console.log(b.move("0w_D4-D7"));
+console.log(b.move("0w_E1-E2"));
 //console.log(b.getSinglePieceAttackSquares(0, "rook","F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0,"rook", "F4", 0));
 //console.log(b.getSinglePieceAttackSquares(0, "bishop","G4", 0));
